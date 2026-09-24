@@ -24,7 +24,7 @@
 
   <div class="search">
     <Search size={18} aria-hidden="true" class="glass" />
-    <input type="search" bind:value={query} placeholder="Search figures, like “periodic table”" aria-label="Search figures" autocomplete="off" />
+    <input type="search" bind:value={query} placeholder="Search figures, like “graduated cylinder”" aria-label="Search figures" autocomplete="off" />
   </div>
 
   {#if query.trim() && !results.length}

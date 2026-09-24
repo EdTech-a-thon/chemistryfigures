@@ -1,12 +1,13 @@
 <script>
-  // A settings group that starts collapsed and shows a one-line summary of its
-  // current values, so the whole setup can be read at a glance.
+  // A settings group that starts collapsed (unless `open`) and shows a
+  // one-line summary of its current values, so the whole setup can be read at
+  // a glance.
   import { ChevronDown } from '@lucide/svelte'
 
-  let { title, summary, icon: Icon, children } = $props()
+  let { title, summary, icon: Icon, open = false, children } = $props()
 </script>
 
-<details class="section">
+<details class="section" {open}>
   <summary>
     <span class="icon"><Icon size={18} aria-hidden="true" /></span>
     <span class="text">

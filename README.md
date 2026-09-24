@@ -8,8 +8,9 @@ and `docs/adr/` for decisions.
 ## Pages
 
 - `/` **Directory**: every generator as a card with a live preview, plus a
-  card to request one we don't make yet. There are no generators yet, so the
-  request card (the plus button) is the only one.
+  card to request one we don't make yet.
+- `/volume-reading` **Volume Reading**: a graduated cylinder or buret showing
+  a typed volume.
 - `/about`, `/privacy`, `/sitemap.xml`, `/robots.txt`
 
 Every page has the top bar: the site name, the current generator, and a
