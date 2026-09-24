@@ -2,6 +2,7 @@
 // and the sitemap all read this list, so adding a generator means adding its
 // folder and one entry here.
 
+import MassReadingPreview from './mass-reading/Preview.svelte'
 import VolumeReadingPreview from './volume-reading/Preview.svelte'
 
 /**
@@ -26,6 +27,16 @@ export const GENERATORS = [
       'Make printable graduated cylinder and buret figures for chemistry tests. Type a volume and students read it from the meniscus, with a magnified view for the estimated digit.',
     keywords: ['graduated', 'cylinder', 'buret', 'burette', 'meniscus', 'volume', 'mL', 'milliliters', 'measurement', 'lab', 'glassware'],
     Preview: VolumeReadingPreview,
+  },
+  {
+    id: 'mass-reading',
+    name: 'Mass Reading',
+    path: '/mass-reading',
+    blurb: 'A digital or triple beam balance showing the mass you type.',
+    description:
+      'Make printable balance figures for chemistry tests. Type a mass and get a digital, analytical or triple beam balance showing it, for students to read.',
+    keywords: ['balance', 'scale', 'digital', 'analytical', 'electronic', 'triple', 'beam', 'mass', 'grams', 'weigh', 'weight', 'measurement', 'lab'],
+    Preview: MassReadingPreview,
   },
 ]
 

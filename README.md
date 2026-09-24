@@ -11,6 +11,8 @@ and `docs/adr/` for decisions.
   card to request one we don't make yet.
 - `/volume-reading` **Volume Reading**: a graduated cylinder or buret showing
   a typed volume.
+- `/mass-reading` **Mass Reading**: a digital or triple beam balance showing
+  a typed mass.
 - `/about`, `/privacy`, `/sitemap.xml`, `/robots.txt`
 
 Every page has the top bar: the site name, the current generator, and a
