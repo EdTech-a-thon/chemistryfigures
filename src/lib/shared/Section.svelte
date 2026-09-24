@@ -1,10 +1,18 @@
-<script>
+<script lang="ts">
   // A settings group that starts collapsed (unless `open`) and shows a
   // one-line summary of its current values, so the whole setup can be read at
   // a glance.
+  import type { Component, Snippet } from 'svelte'
   import { ChevronDown } from '@lucide/svelte'
 
-  let { title, summary, icon: Icon, open = false, children } = $props()
+  interface Props {
+    title: string
+    summary: string
+    icon: Component<any>
+    open?: boolean
+    children: Snippet
+  }
+  let { title, summary, icon: Icon, open = false, children }: Props = $props()
 </script>
 
 <details class="section" {open}>

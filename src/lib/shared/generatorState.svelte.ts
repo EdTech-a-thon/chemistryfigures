@@ -5,8 +5,8 @@
 
 import { replaceState } from '$app/navigation'
 import { page } from '$app/state'
-import { createHistory } from './history.svelte.js'
-import { createPresetStore } from './presetStore.js'
+import { createHistory } from './history.svelte'
+import { createPresetStore } from './presetStore'
 
 interface SettingsDefinition<S> {
   tidy(stored: unknown): S

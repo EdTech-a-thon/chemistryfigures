@@ -1,27 +1,34 @@
-<script>
+<script lang="ts" generics="S">
   // A generator's saved starting points. The one matching the current figure
   // is highlighted; saved ones can be deleted, after a
   // confirmation. `same(a, b)` says whether two settings draw the same figure.
   import { onMount } from 'svelte'
   import { BookmarkPlus, Check, X } from '@lucide/svelte'
   import Modal from './Modal.svelte'
+  import type { Preset, PresetStore } from './presetStore'
 
-  let { store, same, settings, onapply } = $props()
+  interface Props {
+    store: PresetStore<S>
+    same: (a: S, b: S) => boolean
+    settings: S
+    onapply: (settings: S) => void
+  }
+  let { store, same, settings, onapply }: Props = $props()
 
   // Saved presets live in this browser, so they load after the page arrives.
-  let saved = $state([])
+  let saved = $state<Preset<S>[]>([])
   onMount(() => (saved = store.load()))
   let naming = $state(false)
   let name = $state('')
-  let nameInput = $state()
-  let deleting = $state(null) // name of the preset awaiting confirmation
+  let nameInput = $state<HTMLInputElement>()
+  let deleting = $state<string | null>(null) // name of the preset awaiting confirmation
 
   function startSaving() {
     naming = true
     name = ''
     requestAnimationFrame(() => nameInput?.focus())
   }
-  function save(event) {
+  function save(event: SubmitEvent) {
     event.preventDefault()
     const trimmed = name.trim()
     if (!trimmed) return
@@ -29,10 +36,11 @@
     naming = false
   }
   function confirmDelete() {
+    if (deleting === null) return
     saved = store.remove(saved, deleting)
     deleting = null
   }
-  function onkeydown(event) {
+  function onkeydown(event: KeyboardEvent) {
     if (event.key === 'Escape') naming = false
   }
 </script>

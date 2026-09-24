@@ -1,7 +1,7 @@
 <!-- The footer on the directory and the site's other pages; generators go
      without one so the figure gets the whole window. -->
-<script>
-  import { FAMILY, SISTER_SITES } from './config.js'
+<script lang="ts">
+  import { FAMILY, SISTER_SITES } from './config'
 </script>
 
 <footer class="no-print">

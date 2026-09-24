@@ -2,22 +2,27 @@
 // and the sitemap all read this list, so adding a generator means adding its
 // folder and one entry here.
 
+import type { Component } from 'svelte'
 import MassReadingPreview from './mass-reading/Preview.svelte'
 import VolumeReadingPreview from './volume-reading/Preview.svelte'
 
-/**
- * @typedef {object} Generator
- * @property {string} id
- * @property {string} name        display name, e.g. "Volume Reading" (the page title adds "Generator")
- * @property {string} path        its address on the site
- * @property {string} blurb       one line for the directory card
- * @property {string} description the page's search engine description
- * @property {string[]} keywords  words teachers might search for instead of the name
- * @property {any} Preview        component drawing a sample figure
- */
+export interface Generator {
+  id: string
+  /** display name, e.g. "Volume Reading" (the page title adds "Generator") */
+  name: string
+  /** its address on the site */
+  path: string
+  /** one line for the directory card */
+  blurb: string
+  /** the page's search engine description */
+  description: string
+  /** words teachers might search for instead of the name */
+  keywords: string[]
+  /** component drawing a sample figure */
+  Preview: Component
+}
 
-/** @type {Generator[]} */
-export const GENERATORS = [
+export const GENERATORS: Generator[] = [
   {
     id: 'volume-reading',
     name: 'Volume Reading',
@@ -40,13 +45,13 @@ export const GENERATORS = [
   },
 ]
 
-export const findGenerator = (path) => GENERATORS.find((g) => g.path === path)
+export const findGenerator = (path: string) => GENERATORS.find((g) => g.path === path)
 
-const words = (text) => text.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean)
+const words = (text: string) => text.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean)
 
 /** Generators matching a search. Every word typed must start some word in the
  *  generator's name, blurb or keywords, so "grad cyl" finds Volume Reading. */
-export function searchGenerators(query) {
+export function searchGenerators(query: string) {
   const wanted = words(query)
   if (!wanted.length) return GENERATORS
   return GENERATORS.filter((g) => {

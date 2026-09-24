@@ -1,8 +1,9 @@
-<script>
+<script lang="ts">
   // A page's title, description and canonical address for search engines.
-  import { SITE_NAME, SITE_URL } from './config.js'
+  import { SITE_NAME, SITE_URL } from './config'
 
-  let { title, description, path } = $props()
+  /** `title` is left out on the directory, which is titled by the site name alone. */
+  let { title = '', description, path }: { title?: string; description: string; path: string } = $props()
   const fullTitle = $derived(title ? `${title} | ${SITE_NAME}` : SITE_NAME)
 </script>
 

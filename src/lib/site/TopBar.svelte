@@ -1,11 +1,11 @@
-<script>
+<script lang="ts">
   // On every page: the Chemistry Figures name (back to the directory), a note that
   // it's part of the STEM Figures family with links to the other figure sites, the
   // current generator's name, and the teacher.dev credit linking out to teacher.dev.
   import { ChevronRight } from '@lucide/svelte'
   import { page } from '$app/state'
-  import { findGenerator } from '$lib/generators/index.js'
-  import { FAMILY, SISTER_SITES, SITE_NAME } from './config.js'
+  import { findGenerator } from '$lib/generators/index'
+  import { FAMILY, SISTER_SITES, SITE_NAME } from './config'
 
   const current = $derived(findGenerator(page.url.pathname))
 </script>
