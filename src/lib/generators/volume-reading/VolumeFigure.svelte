@@ -4,26 +4,34 @@
   import FigureFrame from '$lib/shared/FigureFrame.svelte'
   import Magnifier from '$lib/shared/Magnifier.svelte'
   import { magnifierLayout } from '$lib/shared/magnify'
+  import Buret from './Buret.svelte'
   import GraduatedCylinder from './GraduatedCylinder.svelte'
+  import { buretLayout } from './buret'
   import { cylinderLayout } from './cylinder'
   import { formatReading, volumeScale } from './scale'
   import type { VolumeSettings } from './settings'
 
   let { settings, svg = $bindable() }: { settings: VolumeSettings; svg?: SVGSVGElement } = $props()
 
-  const scale = $derived(volumeScale('cylinder', settings.size))
-  const at = $derived(cylinderLayout(scale, settings.size))
+  const scale = $derived(volumeScale(settings.instrument, settings.size))
+  const at = $derived(settings.instrument === 'buret' ? buretLayout() : cylinderLayout(scale, settings.size))
   const source = $derived({
     x: at.cx,
     y: at.yOf(settings.reading),
     r: (settings.span * scale.labelEvery * at.perMl) / 2,
   })
   const layout = $derived(magnifierLayout(settings.view, at.width, at.height, source))
-  const label = $derived(`A ${settings.size} mL graduated cylinder reading ${formatReading(scale, settings.reading)} mL`)
+  const label = $derived(
+    `A ${settings.instrument === 'buret' ? '50 mL buret' : `${settings.size} mL graduated cylinder`} reading ${formatReading(scale, settings.reading)} mL`,
+  )
 </script>
 
 {#snippet instrument(zoom: number)}
-  <GraduatedCylinder {scale} size={settings.size} reading={settings.reading} tint="gray" {zoom} />
+  {#if settings.instrument === 'buret'}
+    <Buret {scale} reading={settings.reading} tint="gray" {zoom} />
+  {:else}
+    <GraduatedCylinder {scale} size={settings.size} reading={settings.reading} tint="gray" {zoom} />
+  {/if}
 {/snippet}
 
 <FigureFrame bind:svg width={layout.width} height={layout.height} {label}>

@@ -5,6 +5,7 @@
   import { legibleMarks, marks } from '$lib/shared/marks'
   import { sizeAt } from '$lib/shared/magnify'
   import { cylinderLayout } from './cylinder'
+  import ScaleTicks from './ScaleTicks.svelte'
   import { LIQUID_COLORS, meniscusCurve, type LiquidTint } from './liquid'
   import type { CylinderSize, Scale } from './scale'
 
@@ -25,7 +26,6 @@
   const shown = $derived(
     legibleMarks(marks({ ...scale, max: scale.capacity }), scale.minorEvery * at.perMl * zoom, 16).filter((m) => m.value > 0),
   )
-  const tick = $derived({ major: at.tubeW * 0.5, medium: at.tubeW * 0.36, minor: at.tubeW * 0.24 })
 
   const surface = $derived(meniscusCurve(at.left, at.right, at.yOf(reading), at.meniscus))
   const r = 7 // inside corner radius at the bottom
@@ -52,13 +52,7 @@
     />
   {/if}
 
-  {#each shown as m (m.value)}
-    {@const y = at.yOf(m.value)}
-    <line x1={at.left} x2={at.left + tick[m.kind]} y1={y} y2={y} stroke="#111" stroke-width={(m.kind === 'major' ? 1.5 : 1) * k} />
-    {#if m.label}
-      <text x={at.left + tick.major + 3 * k} {y} dy="0.35em" font-size={font} fill="#111">{m.label}</text>
-    {/if}
-  {/each}
+  <ScaleTicks {shown} left={at.left} tubeW={at.tubeW} yOf={at.yOf} {k} {font} />
   <text x={at.cx} y={at.yOf(scale.capacity) - 22} text-anchor="middle" font-size={font} fill="#111">mL</text>
 
   {#if reading > 0}

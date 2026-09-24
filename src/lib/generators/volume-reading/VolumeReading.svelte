@@ -9,40 +9,55 @@
   import { generatorState } from '$lib/shared/generatorState.svelte'
   import { MAGNIFIER_VIEW_NAMES } from '$lib/shared/magnify'
   import VolumeFigure from './VolumeFigure.svelte'
-  import { CYLINDER_SIZES, formatReading, roundReading, volumeScale, type CylinderSize } from './scale'
+  import { CYLINDER_SIZES, INSTRUMENTS, formatReading, roundReading, volumeScale, type CylinderSize, type Instrument } from './scale'
   import { volumeSettings } from './settings'
 
   const gen = generatorState(volumeSettings, 'volume-reading')
   const s = gen.s
   let svg = $state<SVGSVGElement>()
 
-  const scale = $derived(volumeScale('cylinder', s.size))
+  const INSTRUMENT_NAMES: Record<Instrument, string> = { cylinder: 'Graduated cylinder', buret: 'Buret' }
+  const scale = $derived(volumeScale(s.instrument, s.size))
+  const instrumentName = $derived(s.instrument === 'buret' ? '50 mL buret' : `${s.size} mL graduated cylinder`)
 
-  /** A new size keeps the liquid at the same height, so 80 of 100 mL becomes 8 of 10. */
-  function setSize(size: CylinderSize) {
-    const next = volumeScale('cylinder', size)
+  /** A new instrument or size keeps the reading at the same fraction of
+   *  capacity, so 80 of 100 mL becomes 8 of 10. */
+  function change(instrument: Instrument, size: CylinderSize) {
+    const next = volumeScale(instrument, size)
     s.reading = roundReading(next, (s.reading / scale.capacity) * next.capacity)
+    s.instrument = instrument
     s.size = size
   }
 </script>
 
 <GeneratorPage
   name="Volume Reading"
-  intro="Type a reading and get a graduated cylinder showing it, for students to read."
+  intro="Type a reading and get a graduated cylinder or buret showing it, for students to read."
   filename="volume-reading"
   {gen}
   {svg}
 >
   {#snippet settings()}
-    <Section title="Instrument" summary="{s.size} mL graduated cylinder" icon={FlaskConical} open>
-      <p class="field-label">Graduated cylinder size</p>
-      <div class="chips" role="radiogroup" aria-label="Graduated cylinder size">
-        {#each CYLINDER_SIZES as size (size)}
-          <button type="button" role="radio" aria-checked={s.size === size} class="chip" class:on={s.size === size} onclick={() => setSize(size)}>
-            {size} mL
+    <Section title="Instrument" summary={instrumentName} icon={FlaskConical} open>
+      <div class="segmented" role="radiogroup" aria-label="Instrument">
+        {#each INSTRUMENTS as instrument (instrument)}
+          <button type="button" role="radio" aria-checked={s.instrument === instrument} class:on={s.instrument === instrument} onclick={() => change(instrument, s.size)}>
+            {INSTRUMENT_NAMES[instrument]}
           </button>
         {/each}
       </div>
+      {#if s.instrument === 'cylinder'}
+        <p class="field-label">Size</p>
+        <div class="chips" role="radiogroup" aria-label="Graduated cylinder size">
+          {#each CYLINDER_SIZES as size (size)}
+            <button type="button" role="radio" aria-checked={s.size === size} class="chip" class:on={s.size === size} onclick={() => change('cylinder', size)}>
+              {size} mL
+            </button>
+          {/each}
+        </div>
+      {:else}
+        <p class="note">A buret is always 50 mL, read from 0 at the top.</p>
+      {/if}
     </Section>
     <Section title="Reading" summary="{formatReading(scale, s.reading)} mL" icon={Ruler} open>
       <ReadingField
@@ -65,5 +80,6 @@
 </GeneratorPage>
 
 <style>
-  .field-label { margin: 0 0 0.45rem; font-weight: 700; font-size: 0.9rem; }
+  .field-label { margin: 0.9rem 0 0.45rem; font-weight: 700; font-size: 0.9rem; }
+  .note { margin: 0.7rem 0 0; color: var(--muted); font-size: 0.85rem; }
 </style>
