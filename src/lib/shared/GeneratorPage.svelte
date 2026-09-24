@@ -1,6 +1,6 @@
 <script lang="ts" generics="S extends object">
-  // The layout every generator shares: the generator's name and its settings
-  // groups down the left, saved presets under them, and the figure card
+  // The layout every generator shares: saved presets and the settings groups
+  // under them down the left, and the figure card
   // filling the rest of the window. Phones stack them, figure first.
   import type { Snippet } from 'svelte'
   import FigureCanvas from './FigureCanvas.svelte'
@@ -9,14 +9,13 @@
 
   interface Props {
     name: string
-    intro: string
     filename: string
     gen: ReturnType<typeof generatorState<S>>
     svg: SVGSVGElement | undefined
     settings: Snippet
     figure: Snippet
   }
-  let { name, intro, filename, gen, svg, settings, figure }: Props = $props()
+  let { name, filename, gen, svg, settings, figure }: Props = $props()
 </script>
 
 <div class="generator">
@@ -24,29 +23,25 @@
     <FigureCanvas {svg} {filename} history={gen.history}>{@render figure()}</FigureCanvas>
   </div>
   <aside class="settings-side no-print">
-    <header>
-      <h1>{name}</h1>
-      <p>{intro}</p>
-    </header>
-    <div class="card">{@render settings()}</div>
+    <!-- The top bar shows the name; this keeps the page's heading for screen readers. -->
+    <h1 class="visually-hidden">{name}</h1>
     <div class="card">
       <Presets store={gen.presets} same={gen.same} settings={gen.snapshot()} onapply={gen.apply} />
     </div>
+    <div class="card">{@render settings()}</div>
   </aside>
 </div>
 
 <style>
   .generator { display: flex; flex-direction: column; gap: 1rem; padding: 1rem; }
   .settings-side { display: flex; flex-direction: column; gap: 1rem; }
-  header h1 { font-size: 1.35rem; font-weight: 800; }
-  header p { margin: 0.3rem 0 0; color: var(--muted); font-size: 0.9rem; }
 
   /* Wide screens: settings on the left, scrolling on their own, and the
      figure card filling the window beside them. */
   @media (min-width: 861px) and (min-height: 560px) {
     .generator {
       display: grid;
-      grid-template-columns: 23rem minmax(0, 1fr);
+      grid-template-columns: 27rem minmax(0, 1fr);
       height: calc(100vh - var(--topbar-h));
       padding: 1.25rem;
       gap: 1.25rem;

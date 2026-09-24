@@ -4,8 +4,8 @@ import { formatReading, randomReading, roundReading, volumeScale } from './scale
 describe('graduated cylinder marks', () => {
   it.each([
     ['10', 10, 1, 0.1, 2],
-    ['25', 25, 2.5, 0.25, 2],
-    ['50', 50, 5, 1, 1],
+    ['25', 25, 5, 0.25, 2],
+    ['50', 50, 10, 1, 1],
     ['100', 100, 10, 1, 1],
   ] as const)('%s mL: labeled every %s, minor every %s, read to %s decimals', (size, capacity, label, minor, decimals) => {
     const s = volumeScale('cylinder', size)

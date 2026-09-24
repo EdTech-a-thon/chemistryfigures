@@ -19,7 +19,7 @@
   let svg = $state<SVGSVGElement>()
 
   const INSTRUMENT_NAMES: Record<Instrument, string> = { cylinder: 'Graduated cylinder', buret: 'Buret' }
-  const TINT_NAMES: Record<LiquidTint, string> = { gray: 'Gray (prints best)', blue: 'Blue', red: 'Red', green: 'Green' }
+  const TINT_NAMES: Record<LiquidTint, string> = { gray: 'Gray', blue: 'Blue', red: 'Red', green: 'Green' }
   const scale = $derived(volumeScale(s.instrument, s.size))
   const instrumentName = $derived(s.instrument === 'buret' ? '50 mL buret' : `${s.size} mL graduated cylinder`)
 
@@ -39,7 +39,6 @@
 
 <GeneratorPage
   name="Volume Reading"
-  intro="Type a reading and get a graduated cylinder or buret showing it, for students to read."
   filename="volume-reading"
   {gen}
   {svg}

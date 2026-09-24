@@ -8,10 +8,9 @@
   import ReadingField from '$lib/shared/ReadingField.svelte'
   import Section from '$lib/shared/Section.svelte'
   import { generatorState } from '$lib/shared/generatorState.svelte'
-  import { MAGNIFIER_VIEW_NAMES } from '$lib/shared/magnify'
   import MassFigure from './MassFigure.svelte'
   import { DECIMAL_PLACES, PAN_CONTENTS, type PanContents } from './digital'
-  import { MASS_INSTRUMENTS, answerLine, massRules, massSettings, massText, type MassInstrument } from './settings'
+  import { MASS_INSTRUMENTS, MASS_VIEWS, MASS_VIEW_NAMES, answerLine, massRules, massSettings, massText, type MassInstrument } from './settings'
 
   const gen = generatorState(massSettings, 'mass-reading')
   const s = gen.s
@@ -37,7 +36,6 @@
 
 <GeneratorPage
   name="Mass Reading"
-  intro="Type a mass and get a digital or triple beam balance showing it, for students to read."
   filename="mass-reading"
   {gen}
   {svg}
@@ -60,7 +58,6 @@
             </button>
           {/each}
         </div>
-        <p class="note">3 or 4 places draws an analytical balance inside a draft shield.</p>
         <p class="field-label">On the pan</p>
         <div class="segmented" role="radiogroup" aria-label="On the pan">
           {#each PAN_CONTENTS as pan (pan)}
@@ -86,8 +83,8 @@
       />
     </Section>
     {#if s.instrument === 'triple-beam'}
-      <Section title="Magnifier" summary={MAGNIFIER_VIEW_NAMES[s.view]} icon={ZoomIn}>
-        <MagnifierSettings bind:view={s.view} bind:span={s.span} />
+      <Section title="Magnifier" summary={MASS_VIEW_NAMES[s.view]} icon={ZoomIn}>
+        <MagnifierSettings bind:view={s.view} bind:span={s.span} views={MASS_VIEWS} names={MASS_VIEW_NAMES} />
       </Section>
     {/if}
     <Section title="Title and answer key" summary={textSummary} icon={Type}>

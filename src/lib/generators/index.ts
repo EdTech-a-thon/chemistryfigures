@@ -27,7 +27,7 @@ export const GENERATORS: Generator[] = [
     id: 'volume-reading',
     name: 'Volume Reading',
     path: '/volume-reading',
-    blurb: 'A graduated cylinder or buret showing the volume you type, with a magnified view of the meniscus.',
+    blurb: 'A graduated cylinder or buret showing the volume you type.',
     description:
       'Make printable graduated cylinder and buret figures for chemistry tests. Type a volume and students read it from the meniscus, with a magnified view for the estimated digit.',
     keywords: ['graduated', 'cylinder', 'buret', 'burette', 'meniscus', 'volume', 'mL', 'milliliters', 'measurement', 'lab', 'glassware'],
@@ -37,7 +37,7 @@ export const GENERATORS: Generator[] = [
     id: 'mass-reading',
     name: 'Mass Reading',
     path: '/mass-reading',
-    blurb: 'A digital or triple beam balance showing the mass you type.',
+    blurb: 'A triple beam or digital balance showing the mass you type.',
     description:
       'Make printable balance figures for chemistry tests. Type a mass and get a digital, analytical or triple beam balance showing it, for students to read.',
     keywords: ['balance', 'scale', 'digital', 'analytical', 'electronic', 'triple', 'beam', 'mass', 'grams', 'weigh', 'weight', 'measurement', 'lab'],

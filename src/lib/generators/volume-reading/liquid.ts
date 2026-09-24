@@ -13,12 +13,14 @@ export const LIQUID_COLORS: Record<LiquidTint, { fill: string; surface: string }
 }
 
 /** The meniscus from the left wall to the right: it climbs `depth` up each
- *  wall and is flat across the middle, its bottom exactly at `y`. */
+ *  wall and curves in one continuous bowl, its bottom exactly at `y` in the
+ *  middle. */
 export function meniscusCurve(left: number, right: number, y: number, depth: number) {
   const w = right - left
+  const mid = left + w / 2
   const top = y - depth
   return (
-    `M ${left} ${top} C ${left + 0.02 * w} ${y - 0.25 * depth} ${left + 0.12 * w} ${y} ${left + 0.32 * w} ${y} ` +
-    `L ${right - 0.32 * w} ${y} C ${right - 0.12 * w} ${y} ${right - 0.02 * w} ${y - 0.25 * depth} ${right} ${top}`
+    `M ${left} ${top} C ${left + 0.04 * w} ${y - 0.4 * depth} ${left + 0.22 * w} ${y} ${mid} ${y} ` +
+    `C ${right - 0.22 * w} ${y} ${right - 0.04 * w} ${y - 0.4 * depth} ${right} ${top}`
   )
 }

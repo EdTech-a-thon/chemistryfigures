@@ -1,7 +1,7 @@
 <script lang="ts">
-  // The box where the teacher types an instrument's reading. What they type
-  // is kept to the instrument's range and decimal places once they leave the
-  // box or press Enter.
+  // The box where the teacher types an instrument's reading. The figure
+  // follows as they type; the box itself is tidied to the instrument's range
+  // and decimal places once they leave it or press Enter.
   import { tick } from 'svelte'
   import { Dices } from '@lucide/svelte'
 
@@ -19,6 +19,18 @@
   let { label, value, decimals, min, max, unit, onchange, onrandom }: Props = $props()
 
   const id = $props.id()
+  let input: HTMLInputElement
+
+  // Show the reading, except while it's being typed: rewriting the box then
+  // would turn "4" into "4.0" under the cursor.
+  $effect(() => {
+    const text = value.toFixed(decimals)
+    if (document.activeElement !== input) input.value = text
+  })
+
+  function update() {
+    if (Number.isFinite(input.valueAsNumber)) onchange(input.valueAsNumber)
+  }
 
   async function commit(event: Event & { currentTarget: HTMLInputElement }) {
     const input = event.currentTarget
@@ -40,7 +52,9 @@
       step={10 ** -decimals}
       {min}
       {max}
-      value={value.toFixed(decimals)}
+      defaultValue={value.toFixed(decimals)}
+      bind:this={input}
+      oninput={update}
       onchange={commit}
     />
     <span class="unit">{unit}</span>

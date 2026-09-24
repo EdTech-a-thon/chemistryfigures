@@ -1,21 +1,33 @@
 // Mass Reading's settings, as they appear in the page address.
 
 import { figureTextFields } from '$lib/shared/figureText'
-import { MAGNIFIER_VIEWS } from '$lib/shared/magnify'
+import { MAGNIFIER_VIEW_NAMES } from '$lib/shared/magnify'
 import { choice, defineSettings, number } from '$lib/shared/settings'
 import { PAN_CONTENTS, digitalBalance, randomMass, roundMass, type DecimalPlaces } from './digital'
 import { TRIPLE_BEAM_CAPACITY, TRIPLE_BEAM_DECIMALS, randomTripleBeamMass, roundTripleBeam } from './tripleBeam'
 
-export const MASS_INSTRUMENTS = ['digital', 'triple-beam'] as const
+export const MASS_INSTRUMENTS = ['triple-beam', 'digital'] as const
 export type MassInstrument = (typeof MASS_INSTRUMENTS)[number]
+
+/** No magnifier-only view: nobody wants a mass figure without the balance in
+ *  it. "beams" is the balance cropped to its beams, riders and the block
+ *  joining them. */
+export const MASS_VIEWS = ['both', 'whole', 'beams'] as const
+export type MassView = (typeof MASS_VIEWS)[number]
+
+export const MASS_VIEW_NAMES: Record<MassView, string> = {
+  both: MAGNIFIER_VIEW_NAMES.both,
+  whole: MAGNIFIER_VIEW_NAMES.whole,
+  beams: 'Beams only',
+}
 
 export const massSettings = defineSettings(
   {
-    instrument: choice(MASS_INSTRUMENTS, 'digital'),
+    instrument: choice(MASS_INSTRUMENTS, 'triple-beam'),
     decimals: number({ min: 1, max: 4, fallback: 2 }),
     pan: choice(PAN_CONTENTS, 'boat'),
     mass: number({ min: 0, max: 1000, fallback: 24.73 }),
-    view: choice(MAGNIFIER_VIEWS, 'both'),
+    view: choice(MASS_VIEWS, 'both'),
     span: number({ min: 1, max: 6, fallback: 3 }),
     ...figureTextFields(),
   },

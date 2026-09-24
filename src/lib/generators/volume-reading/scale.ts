@@ -19,12 +19,13 @@ export interface Scale {
   readsDown: boolean
 }
 
-// Numbered every tenth of capacity. The 50 mL cylinder has 1 mL marks, like
-// real ones, rather than 0.5 mL.
+// Numbered every tenth of capacity, except the 50 mL cylinder: it has 1 mL
+// marks, like real ones, rather than 0.5 mL, and is numbered every 10 mL like
+// the 100 mL so it gets the same medium mark halfway between numbers.
 const CYLINDERS: Record<CylinderSize, Omit<Scale, 'decimals' | 'readsDown'>> = {
   '10': { capacity: 10, labelEvery: 1, minorEvery: 0.1 },
-  '25': { capacity: 25, labelEvery: 2.5, minorEvery: 0.25 },
-  '50': { capacity: 50, labelEvery: 5, minorEvery: 1 },
+  '25': { capacity: 25, labelEvery: 5, minorEvery: 0.25 },
+  '50': { capacity: 50, labelEvery: 10, minorEvery: 1 },
   '100': { capacity: 100, labelEvery: 10, minorEvery: 1 },
 }
 

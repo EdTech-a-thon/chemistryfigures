@@ -18,17 +18,15 @@
 </script>
 
 <g transform="translate(0 {-size.top})" stroke-linejoin="round" stroke-linecap="round">
-  {#if balance.analytical}
-    <!-- draft shield: a glass box with a frame and a sliding door -->
-    <rect x="24" y="14" width="332" height="162" fill="#fff" stroke="#111" stroke-width="2" />
-    <rect x="24" y="14" width="332" height="10" fill="#fff" stroke="#111" stroke-width="2" />
-    <line x1="190" y1="24" x2="190" y2="176" stroke="#111" stroke-width="1.2" />
-    <path d="M 48 44 l 22 -14 M 48 60 l 12 -8 M 214 44 l 22 -14 M 214 60 l 12 -8" stroke="#9ca3af" stroke-width="1.5" />
-  {/if}
-
   <!-- body, with a sloped top deck -->
   <path d="M 34 172 H 346 L 370 192 H 10 Z" fill="#fff" stroke="#111" stroke-width="2" />
   <rect x="10" y="192" width="360" height="72" rx="8" fill="#fff" stroke="#111" stroke-width="2" />
+
+  {#if balance.analytical}
+    <!-- draft shield, back: the far pane and the two side panes, behind the pan -->
+    <path d="M 44 20 H 336 V 174 H 44 Z" fill="#eef3f6" stroke="#111" stroke-width="1.5" />
+    <path d="M 44 20 L 22 36 V 190 L 44 174 Z M 336 20 L 358 36 V 190 L 336 174 Z" fill="#e3eaef" stroke="#111" stroke-width="1.5" />
+  {/if}
 
   <!-- pan on its post -->
   <rect x={cx - 10} y="160" width="20" height="13" fill="#fff" stroke="#111" stroke-width="2" />
@@ -45,6 +43,14 @@
       <line x1={cx + 16} x2={cx + 30} y1={y} y2={y} stroke="#111" stroke-width="1.2" />
     {/each}
     <path d="M {cx - 46} 58 Q {cx - 40} 60 {cx - 38} 66 V 147 Q {cx - 38} 151 {cx - 34} 151 H {cx + 34} Q {cx + 38} 151 {cx + 38} 147 V 60" fill="none" stroke="#111" stroke-width="2" />
+  {/if}
+
+  {#if balance.analytical}
+    <!-- draft shield, front: a tinted glass pane over the pan, the lid with its handle, reflections -->
+    <rect x="22" y="36" width="336" height="154" fill="#cfdde6" fill-opacity="0.28" stroke="#111" stroke-width="2" />
+    <path d="M 44 20 H 336 L 358 36 H 22 Z" fill="#fff" stroke="#111" stroke-width="2" />
+    <rect x={cx - 14} y="24" width="28" height="6" rx="3" fill="#fff" stroke="#111" stroke-width="1.5" />
+    <path d="M 40 110 L 104 46 M 40 134 L 70 104 M 280 180 L 340 120 M 306 180 L 340 146" stroke="#fff" stroke-width="5" stroke-opacity="0.9" />
   {/if}
 
   <!-- display -->
