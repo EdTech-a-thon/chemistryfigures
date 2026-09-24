@@ -3,6 +3,7 @@
   // is kept to the instrument's range and decimal places once they leave the
   // box or press Enter.
   import { tick } from 'svelte'
+  import { Dices } from '@lucide/svelte'
 
   interface Props {
     label: string
@@ -12,8 +13,10 @@
     max: number
     unit: string
     onchange: (value: number) => void
+    /** picks a random valid reading */
+    onrandom: () => void
   }
-  let { label, value, decimals, min, max, unit, onchange }: Props = $props()
+  let { label, value, decimals, min, max, unit, onchange, onrandom }: Props = $props()
 
   const id = $props.id()
 
@@ -41,6 +44,7 @@
       onchange={commit}
     />
     <span class="unit">{unit}</span>
+    <button type="button" class="btn-ghost random" onclick={onrandom}><Dices size={17} aria-hidden="true" /> Random</button>
   </div>
   <p class="hint">From {min} to {max} {unit}, to {decimals === 1 ? 'one decimal place' : `${decimals} decimal places`}.</p>
 </div>
@@ -50,5 +54,6 @@
   .row { display: flex; align-items: center; gap: 0.5rem; }
   .row input { max-width: 9rem; font-variant-numeric: tabular-nums; }
   .unit { color: var(--muted); font-weight: 600; }
+  .random { margin-left: auto; padding: 0.5rem 0.8rem; font-size: 0.9rem; }
   .hint { margin: 0.35rem 0 0; color: var(--muted); font-size: 0.8rem; }
 </style>

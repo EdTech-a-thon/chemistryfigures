@@ -9,7 +9,7 @@
   import { buretLayout } from './buret'
   import { cylinderLayout } from './cylinder'
   import { formatReading, volumeScale } from './scale'
-  import type { VolumeSettings } from './settings'
+  import { answerLine, type VolumeSettings } from './settings'
 
   let { settings, svg = $bindable() }: { settings: VolumeSettings; svg?: SVGSVGElement } = $props()
 
@@ -28,13 +28,20 @@
 
 {#snippet instrument(zoom: number)}
   {#if settings.instrument === 'buret'}
-    <Buret {scale} reading={settings.reading} tint="gray" {zoom} />
+    <Buret {scale} reading={settings.reading} tint={settings.tint} {zoom} />
   {:else}
-    <GraduatedCylinder {scale} size={settings.size} reading={settings.reading} tint="gray" {zoom} />
+    <GraduatedCylinder {scale} size={settings.size} reading={settings.reading} tint={settings.tint} {zoom} />
   {/if}
 {/snippet}
 
-<FigureFrame bind:svg width={layout.width} height={layout.height} {label}>
+<FigureFrame
+  bind:svg
+  width={layout.width}
+  height={layout.height}
+  {label}
+  title={settings.titleMode === 'text' ? settings.title : ''}
+  answerKey={settings.answerKey ? answerLine(settings) : ''}
+>
   {#if layout.whole}
     <g transform="translate(0 {(layout.height - at.height) / 2})">{@render instrument(1)}</g>
   {/if}

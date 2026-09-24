@@ -1,7 +1,8 @@
 <script lang="ts">
   // Volume Reading: pick an instrument, type its reading, and get a figure
   // students read the volume from.
-  import { FlaskConical, Ruler, ZoomIn } from '@lucide/svelte'
+  import { FlaskConical, Ruler, Type, ZoomIn } from '@lucide/svelte'
+  import FigureTextSettings from '$lib/shared/FigureTextSettings.svelte'
   import GeneratorPage from '$lib/shared/GeneratorPage.svelte'
   import MagnifierSettings from '$lib/shared/MagnifierSettings.svelte'
   import ReadingField from '$lib/shared/ReadingField.svelte'
@@ -9,16 +10,22 @@
   import { generatorState } from '$lib/shared/generatorState.svelte'
   import { MAGNIFIER_VIEW_NAMES } from '$lib/shared/magnify'
   import VolumeFigure from './VolumeFigure.svelte'
-  import { CYLINDER_SIZES, INSTRUMENTS, formatReading, roundReading, volumeScale, type CylinderSize, type Instrument } from './scale'
-  import { volumeSettings } from './settings'
+  import { LIQUID_TINTS, type LiquidTint } from './liquid'
+  import { CYLINDER_SIZES, INSTRUMENTS, formatReading, randomReading, roundReading, volumeScale, type CylinderSize, type Instrument } from './scale'
+  import { answerLine, volumeSettings } from './settings'
 
   const gen = generatorState(volumeSettings, 'volume-reading')
   const s = gen.s
   let svg = $state<SVGSVGElement>()
 
   const INSTRUMENT_NAMES: Record<Instrument, string> = { cylinder: 'Graduated cylinder', buret: 'Buret' }
+  const TINT_NAMES: Record<LiquidTint, string> = { gray: 'Gray (prints best)', blue: 'Blue', red: 'Red', green: 'Green' }
   const scale = $derived(volumeScale(s.instrument, s.size))
   const instrumentName = $derived(s.instrument === 'buret' ? '50 mL buret' : `${s.size} mL graduated cylinder`)
+
+  const textSummary = $derived(
+    [s.titleMode === 'text' && s.title ? `“${s.title}”` : 'No title', s.answerKey ? 'answer key' : 'no answer key'].join(', '),
+  )
 
   /** A new instrument or size keeps the reading at the same fraction of
    *  capacity, so 80 of 100 mL becomes 8 of 10. */
@@ -58,6 +65,14 @@
       {:else}
         <p class="note">A buret is always 50 mL, read from 0 at the top.</p>
       {/if}
+      <p class="field-label">Liquid</p>
+      <div class="chips" role="radiogroup" aria-label="Liquid color">
+        {#each LIQUID_TINTS as tint (tint)}
+          <button type="button" role="radio" aria-checked={s.tint === tint} class="chip" class:on={s.tint === tint} onclick={() => (s.tint = tint)}>
+            {TINT_NAMES[tint]}
+          </button>
+        {/each}
+      </div>
     </Section>
     <Section title="Reading" summary="{formatReading(scale, s.reading)} mL" icon={Ruler} open>
       <ReadingField
@@ -68,10 +83,14 @@
         max={scale.capacity}
         unit="mL"
         onchange={(v) => (s.reading = roundReading(scale, v))}
+        onrandom={() => (s.reading = randomReading(scale))}
       />
     </Section>
     <Section title="Magnifier" summary={MAGNIFIER_VIEW_NAMES[s.view]} icon={ZoomIn}>
       <MagnifierSettings bind:view={s.view} bind:span={s.span} />
+    </Section>
+    <Section title="Title and answer key" summary={textSummary} icon={Type}>
+      <FigureTextSettings bind:titleMode={s.titleMode} bind:title={s.title} bind:answerKey={s.answerKey} answer={answerLine(s)} />
     </Section>
   {/snippet}
   {#snippet figure()}
