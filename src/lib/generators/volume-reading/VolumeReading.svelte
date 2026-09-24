@@ -1,11 +1,13 @@
 <script lang="ts">
   // Volume Reading: pick an instrument, type its reading, and get a figure
   // students read the volume from.
-  import { FlaskConical, Ruler } from '@lucide/svelte'
+  import { FlaskConical, Ruler, ZoomIn } from '@lucide/svelte'
   import GeneratorPage from '$lib/shared/GeneratorPage.svelte'
+  import MagnifierSettings from '$lib/shared/MagnifierSettings.svelte'
   import ReadingField from '$lib/shared/ReadingField.svelte'
   import Section from '$lib/shared/Section.svelte'
   import { generatorState } from '$lib/shared/generatorState.svelte'
+  import { MAGNIFIER_VIEW_NAMES } from '$lib/shared/magnify'
   import VolumeFigure from './VolumeFigure.svelte'
   import { CYLINDER_SIZES, formatReading, roundReading, volumeScale, type CylinderSize } from './scale'
   import { volumeSettings } from './settings'
@@ -52,6 +54,9 @@
         unit="mL"
         onchange={(v) => (s.reading = roundReading(scale, v))}
       />
+    </Section>
+    <Section title="Magnifier" summary={MAGNIFIER_VIEW_NAMES[s.view]} icon={ZoomIn}>
+      <MagnifierSettings bind:view={s.view} bind:span={s.span} />
     </Section>
   {/snippet}
   {#snippet figure()}

@@ -35,6 +35,6 @@ export function cylinderLayout(scale: Scale, size: CylinderSize) {
     perMl: SCALE_H / scale.capacity,
     yOf: (ml: number) => yZero - (ml / scale.capacity) * SCALE_H,
     /** the bottom of the meniscus sits this far below the liquid at the wall */
-    meniscus: tubeW * 0.09,
+    meniscus: tubeW * 0.12,
   }
 }
