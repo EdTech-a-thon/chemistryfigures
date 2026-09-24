@@ -1,24 +1,54 @@
 <script lang="ts">
-  // The Mass Reading figure for a set of settings.
+  // The Mass Reading figure for a set of settings. A triple beam balance can
+  // have a magnifier on its front beam, beside the balance or alone.
   import FigureFrame from '$lib/shared/FigureFrame.svelte'
+  import Magnifier from '$lib/shared/Magnifier.svelte'
+  import { magnifierLayout } from '$lib/shared/magnify'
   import DigitalBalance from './DigitalBalance.svelte'
-  import { digitalBalanceSize, displayText } from './digital'
-  import { answerLine, balanceOf, type MassSettings } from './settings'
+  import TripleBeamBalance, { TRIPLE_BEAM, frontBeamY, frontRiderX } from './TripleBeamBalance.svelte'
+  import { digitalBalance, digitalBalanceSize, type DecimalPlaces } from './digital'
+  import { answerLine, massText, type MassSettings } from './settings'
+  import { splitRiders } from './tripleBeam'
 
   let { settings, svg = $bindable() }: { settings: MassSettings; svg?: SVGSVGElement } = $props()
 
-  const balance = $derived(balanceOf(settings))
-  const size = $derived(digitalBalanceSize(balance.analytical, settings.pan))
-  const label = $derived(`A digital balance showing ${displayText(balance, settings.mass)} g`)
+  const balance = $derived(digitalBalance(settings.decimals as DecimalPlaces))
+  const digitalSize = $derived(digitalBalanceSize(balance.analytical, settings.pan))
+  const source = $derived({
+    x: frontRiderX(splitRiders(settings.mass).front),
+    y: frontBeamY,
+    r: (settings.span * TRIPLE_BEAM.frontPerGram) / 2,
+  })
+  const layout = $derived(
+    settings.instrument === 'triple-beam'
+      ? magnifierLayout(settings.view, TRIPLE_BEAM.width, TRIPLE_BEAM.height, source)
+      : { ...digitalSize, origin: { x: 0, y: 0 }, magnifier: null },
+  )
+  const label = $derived(
+    `A ${settings.instrument === 'triple-beam' ? 'triple beam' : 'digital'} balance showing ${massText(settings)} g`,
+  )
 </script>
+
+{#snippet tripleBeam(zoom: number)}
+  <TripleBeamBalance mass={settings.mass} {zoom} />
+{/snippet}
 
 <FigureFrame
   bind:svg
-  width={size.width}
-  height={size.height}
+  width={layout.width}
+  height={layout.height}
   {label}
   title={settings.titleMode === 'text' ? settings.title : ''}
   answerKey={settings.answerKey ? answerLine(settings) : ''}
 >
-  <DigitalBalance {balance} mass={settings.mass} pan={settings.pan} />
+  {#if settings.instrument === 'digital'}
+    <DigitalBalance {balance} mass={settings.mass} pan={settings.pan} />
+  {:else}
+    {#if layout.origin}
+      <g transform="translate({layout.origin.x} {layout.origin.y})">{@render tripleBeam(1)}</g>
+    {/if}
+    {#if layout.magnifier}
+      <Magnifier {source} target={layout.magnifier} marked={!!layout.origin} origin={layout.origin ?? undefined} scene={tripleBeam} />
+    {/if}
+  {/if}
 </FigureFrame>

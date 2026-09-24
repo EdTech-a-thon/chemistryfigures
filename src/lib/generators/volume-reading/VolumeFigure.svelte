@@ -42,10 +42,10 @@
   title={settings.titleMode === 'text' ? settings.title : ''}
   answerKey={settings.answerKey ? answerLine(settings) : ''}
 >
-  {#if layout.whole}
-    <g transform="translate(0 {(layout.height - at.height) / 2})">{@render instrument(1)}</g>
+  {#if layout.origin}
+    <g transform="translate({layout.origin.x} {layout.origin.y})">{@render instrument(1)}</g>
   {/if}
   {#if layout.magnifier}
-    <Magnifier {source} target={layout.magnifier} marked={layout.whole} scene={instrument} />
+    <Magnifier {source} target={layout.magnifier} marked={!!layout.origin} origin={layout.origin ?? undefined} scene={instrument} />
   {/if}
 </FigureFrame>

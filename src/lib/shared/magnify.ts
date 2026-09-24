@@ -28,19 +28,22 @@ export const sizeAt = (zoom: number) => zoom ** 0.4 / zoom
 
 /**
  * Where everything goes for a drawing `width` × `height` whose magnified
- * region is `source` (in drawing units). The drawing sits at (0, 0), with the
- * magnifier to its right, level with the region as far as the drawing's
+ * region is `source` (in drawing units). The drawing sits at `origin`, with
+ * the magnifier to its right, level with the region as far as the drawing's
  * height allows. With the magnifier alone, only the magnifier is drawn.
  */
 export function magnifierLayout(view: MagnifierView, width: number, height: number, source: Circle) {
   const R = RADIUS
-  if (view === 'whole') return { width, height, whole: true, magnifier: null }
-  if (view === 'magnifier') return { width: 2 * R, height: 2 * R, whole: false, magnifier: { x: R, y: R, r: R } }
-  const y = Math.min(Math.max(source.y, R), Math.max(R, height - R))
+  const atTop = { x: 0, y: 0 }
+  if (view === 'whole') return { width, height, origin: atTop, magnifier: null }
+  if (view === 'magnifier') return { width: 2 * R, height: 2 * R, origin: null, magnifier: { x: R, y: R, r: R } }
+  // A drawing shorter than the magnifier is centered beside it.
+  const origin = { x: 0, y: Math.max(0, R - height / 2) }
+  const y = Math.min(Math.max(origin.y + source.y, R), Math.max(R, origin.y + height - R))
   return {
     width: width + GAP + 2 * R,
     height: Math.max(height, 2 * R),
-    whole: true,
+    origin,
     magnifier: { x: width + GAP + R, y, r: R },
   }
 }
