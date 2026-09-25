@@ -6,18 +6,19 @@
   import FigureFrame from '$lib/shared/FigureFrame.svelte'
   import StructureDrawing from './StructureDrawing.svelte'
   import { FORMULA_FONT, KEY_FONT, layoutFigure, type Row, type Selection } from './figureLayout'
-  import type { Figure, LewisSettings } from './settings'
+  import type { Figure } from './settings'
 
   interface Props {
-    settings: LewisSettings
     figure: Figure
     svg?: SVGSVGElement
     selected?: Selection | null
     onselect?: (selection: Selection) => void
   }
-  let { settings, figure, svg = $bindable(), selected = null, onselect }: Props = $props()
+  let { figure, svg = $bindable(), selected = null, onselect }: Props = $props()
 
   const INK = '#111'
+  // As drawn: a changed structure is always one structure in full.
+  const settings = $derived(figure.settings)
   const layout = $derived(layoutFigure(settings, figure))
   const SCAFFOLD_WORDS = { full: '', bonds: ', with bonds but no lone electrons', skeleton: ', atoms only', formula: '' }
 
@@ -39,7 +40,7 @@
 {#snippet row(r: Row, pick?: (selection: Selection) => void)}
   {#each r.drawings as d, i (i)}
     <g transform="translate({d.x} {d.y})">
-      <StructureDrawing drawing={d.item} {selected} onselect={pick} />
+      <StructureDrawing drawing={d.item} selected={pick ? selected : null} onselect={pick} />
     </g>
   {/each}
   {#each r.arrows as a, i (i)}

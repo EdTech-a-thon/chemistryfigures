@@ -16,16 +16,35 @@ describe('settings in the page address', () => {
     expect(lewisSettings.toQuery(s)).toContain('changes=b0_1')
   })
 
-  it('never have a scaffold or all resonance structures with changes', () => {
-    const s = settings({ scaffold: 'skeleton', resonance: 'all', changes: [{ kind: 'lone', atom: 0, lone: 2 }] })
-    expect(s.scaffold).toBe('full')
-    expect(s.resonance).toBe('one')
-    expect(settings({ scaffold: 'skeleton', central: 'O' }).scaffold).toBe('full')
-    expect(settings({ scaffold: 'skeleton' }).scaffold).toBe('skeleton')
+  it('keep every resonance structure a formula has', () => {
+    expect(settings({ form: 15 }).form).toBe(15)
   })
 })
 
 describe('what the figure shows', () => {
+  it('never has a scaffold or all resonance structures with changes', () => {
+    const f = figureOf(settings({ formula: 'NO3-', scaffold: 'skeleton', resonance: 'all', changes: [{ kind: 'lone', atom: 0, lone: 2 }] }))
+    expect(f.settings.scaffold).toBe('full')
+    expect(f.settings.resonance).toBe('one')
+    expect(f.shown).toHaveLength(1)
+    expect(figureOf(settings({ formula: 'CO2', scaffold: 'skeleton', central: 'O' })).settings.scaffold).toBe('full')
+    expect(figureOf(settings({ formula: 'CO2', scaffold: 'skeleton' })).settings.scaffold).toBe('skeleton')
+  })
+
+  it('ignores a central atom it can’t change to, so nothing is stuck', () => {
+    const f = figureOf(settings({ formula: 'C2H5OH', central: 'H', scaffold: 'skeleton' }))
+    expect(f.changed).toBe(false)
+    expect(f.settings.scaffold).toBe('skeleton')
+  })
+
+  it('counts formal charge labels as changes only while they’re drawn', () => {
+    const label = [{ kind: 'label' as const, atom: 1, label: -1 }]
+    expect(figureOf(settings({ formula: 'CO2', formalCharges: true, changes: label })).changed).toBe(true)
+    const hidden = figureOf(settings({ formula: 'CO2', changes: label }))
+    expect(hidden.changed).toBe(false)
+    expect(hidden.changes).toEqual([])
+  })
+
   it('draws the correct structure, with no answer key', () => {
     const f = figureOf(settings({ formula: 'CO2', answerKey: true }))
     expect(f.shown).toHaveLength(1)

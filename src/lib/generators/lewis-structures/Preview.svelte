@@ -9,7 +9,7 @@
   const nitrate = lewisSettings.tidy({ ...lewisSettings.defaults, formula: 'NO3-', formalCharges: true })
 </script>
 
-{#snippet waterFigure()}<LewisFigure settings={water} figure={figureOf(water)} />{/snippet}
-{#snippet nitrateFigure()}<LewisFigure settings={nitrate} figure={figureOf(nitrate)} />{/snippet}
+{#snippet waterFigure()}<LewisFigure figure={figureOf(water)} />{/snippet}
+{#snippet nitrateFigure()}<LewisFigure figure={figureOf(nitrate)} />{/snippet}
 
 <SplitPreview figures={[waterFigure, nitrateFigure]} split="vertical" />

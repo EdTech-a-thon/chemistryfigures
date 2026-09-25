@@ -52,8 +52,9 @@ export function findCentral(f: Formula): Central {
     if (central < 0 || electronegativity(a) < electronegativity(atoms[central])) central = i
   })
   if (central < 0) return { ok: false, reason: 'several' }
-  // An acid written H first (HNO3, H2SO4) has its H atoms on O.
-  if (f.tokens[0].symbol === 'H' && atoms.includes('O') && atoms[central] !== 'O') return { ok: false, reason: 'acid' }
+  // An oxyacid written H first (HNO3, H2SO4) has its H atoms on O. Around
+  // C they're on C (H2CO is formaldehyde), and the carbon acids are listed.
+  if (f.tokens[0].symbol === 'H' && atoms.includes('O') && !['O', 'C'].includes(atoms[central])) return { ok: false, reason: 'acid' }
   return { ok: true, central }
 }
 
@@ -71,6 +72,10 @@ interface State {
 }
 
 const stateKey = (s: State) => s.orders.join('') + '|' + s.lone.join(',')
+
+/** How many ways of placing the electrons are tried at most, so an odd
+ *  formula like SO42 can't freeze the page. */
+const MAX_STATES = 5000
 
 /** Every correct structure for a skeleton under the rule, the resonance
  *  structures in order; none when it can't make a correct Lewis structure,
@@ -106,10 +111,10 @@ export function correctStructures(sk: Skeleton, rule: Rule, strict = true): Stru
 
   /** Every state reachable by turning a lone pair on one atom into a bond
    *  to its neighbour, where `takes` says the neighbour may have it. */
-  function explore(starts: State[], takes: (s: State, taker: number, k: number) => boolean) {
+  function explore(starts: State[], takes: (s: State, taker: number, giver: number, k: number) => boolean) {
     const seen = new Map<string, State>()
     const stack = [...starts]
-    while (stack.length) {
+    while (stack.length && seen.size < MAX_STATES) {
       const s = stack.pop()!
       const key = stateKey(s)
       if (seen.has(key)) continue
@@ -119,7 +124,7 @@ export function correctStructures(sk: Skeleton, rule: Rule, strict = true): Stru
           [a, b],
           [b, a],
         ]) {
-          if (!canGive(s, giver) || !takes(s, taker, k)) continue
+          if (!canGive(s, giver) || !takes(s, taker, giver, k)) continue
           const next = { orders: [...s.orders], lone: [...s.lone] }
           next.orders[k]++
           next.lone[giver] -= 2
@@ -132,12 +137,18 @@ export function correctStructures(sk: Skeleton, rule: Rule, strict = true): Stru
 
   // Step 4: towards octets, never past one.
   const start = { orders: bonds.map(() => 1), lone }
-  const toOctet = explore([start], (s, i, k) => atoms[i] !== 'H' && s.orders[k] < 3 && around(s, i) + 2 <= octetOf(atoms[i]))
+  const toOctet = explore([start], (s, i, _, k) => atoms[i] !== 'H' && s.orders[k] < 3 && around(s, i) + 2 <= octetOf(atoms[i]))
   const short = (s: State) => indexes.reduce((n, i) => n + Math.max(0, octetOf(atoms[i]) - around(s, i)), 0)
   const fewestShort = Math.min(...toOctet.map(short))
   let candidates = toOctet.filter((s) => short(s) === fewestShort)
+  // Past an octet, a bond is only worth making when it takes a positive
+  // formal charge down and a negative one up, which also keeps the search
+  // small however many atoms could give a pair.
   if (rule === 'fewest')
-    candidates = explore(candidates, (s, i, k) => inner(i) && canExpand(atoms[i]) && s.orders[k] < 2 && around(s, i) >= octetOf(atoms[i]))
+    candidates = explore(
+      candidates,
+      (s, i, giver, k) => inner(i) && canExpand(atoms[i]) && s.orders[k] < 2 && around(s, i) >= octetOf(atoms[i]) && formal(s, i) > 0 && formal(s, giver) < 0,
+    )
 
   // Keep the smallest formal charges, then (past an octet) the fewest electrons.
   const charges = (s: State) => indexes.reduce((n, i) => n + Math.abs(formal(s, i)), 0)

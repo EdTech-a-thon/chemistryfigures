@@ -76,6 +76,12 @@ describe('the central atom', () => {
     expect(central('H2SO4')).toBe('acid')
     expect(central('HOCl')).toBe('acid')
   })
+
+  it('keeps H on C, written first or not', () => {
+    expect(central('H2CO')).toBe('C')
+    expect(central('HCHO')).toBe('C')
+    expect(bonds(only('H2CO'))).toEqual(['C-H', 'C-H', 'C=O'])
+  })
 })
 
 describe('building a structure with the octet rule', () => {
@@ -158,6 +164,12 @@ describe('building a structure with the octet rule', () => {
 })
 
 describe('building a structure with the fewest formal charges', () => {
+  it('stays quick for a formula with many atoms that could give a pair', () => {
+    const start = Date.now()
+    for (const text of ['SO24', 'PO43', 'SO42-']) build(text, 'fewest')
+    expect(Date.now() - start).toBeLessThan(2000)
+  })
+
   const doubles = (s: Structure) => s.bonds.filter((b) => b.order === 2).length
 
   it('makes double bonds past an octet in period 3 and lower', () => {

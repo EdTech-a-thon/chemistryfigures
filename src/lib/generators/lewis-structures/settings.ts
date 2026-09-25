@@ -1,12 +1,13 @@
 // Lewis Structures' settings, as they appear in the page address, and what
 // the figure shows for them.
 
+import { figureTextFields } from '$lib/shared/figureText'
 import { bool, choice, defineSettings, number, text } from '$lib/shared/settings'
 import { RULES } from './build'
-import { applyChanges, changesField } from './changes'
+import { applyChanges, changesField, type Change } from './changes'
 import { findMistakes } from './check'
 import { SHAPES } from './layout'
-import { aroundCentral, resolve, type Resolved } from './resolve'
+import { aroundCentral, resolve, type ResolveInput, type Resolved } from './resolve'
 import type { Structure } from './structure'
 
 /** How much of the structure a "complete this" question gives the student
@@ -19,7 +20,7 @@ export const RESONANCES = ['one', 'all'] as const
 export type Resonance = (typeof RESONANCES)[number]
 
 export const MAX_FORMULA = 40
-const MAX_FORMS = 12
+const MAX_FORMS = 99
 
 export const lewisSettings = defineSettings(
   {
@@ -33,44 +34,61 @@ export const lewisSettings = defineSettings(
     scaffold: choice(SCAFFOLDS, 'full'),
     central: text('', 2),
     changes: changesField(),
-    answerKey: bool(false),
-    titleMode: choice(['none', 'text'] as const, 'none'),
-    title: text(''),
+    ...figureTextFields(),
   },
-  // A changed structure is one structure, drawn in full: a figure is either
-  // a "complete this" question or a "find the mistake" one.
-  (s) => {
-    const changed = s.changes.length > 0 || s.central !== ''
-    return { ...s, form: Math.round(s.form), ...(changed ? { scaffold: 'full' as const, resonance: 'one' as const } : {}) }
-  },
+  (s) => ({ ...s, form: Math.round(s.form) }),
 )
 
 export type LewisSettings = typeof lewisSettings.defaults
 
 export interface Figure {
+  /** the settings as drawn: a changed structure is one structure in full,
+   *  since a figure is either a "complete this" question or a "find the
+   *  mistake" one */
+  settings: LewisSettings
   resolved: Resolved
   /** the structure changes start from, when there is one */
   start?: Structure
   /** the structures drawn, left to right: several for all resonance structures */
   shown: Structure[]
-  /** whether the teacher changed the structure */
+  /** the changes that apply: formal charge labels only while they're drawn */
+  changes: Change[]
+  /** whether the teacher changed the structure, its central atom included */
   changed: boolean
+  /** whether a change put another atom in the middle */
+  centralChanged: boolean
   /** a changed structure's mistakes */
   mistakes: string[]
   /** what the answer key under the figure shows */
   key: { kind: 'none' } | { kind: 'structures'; structures: Structure[] } | { kind: 'mistakes'; mistakes: string[] }
 }
 
-export function figureOf(s: LewisSettings): Figure {
-  const resolved = resolve(s)
-  if (!resolved.ok) return { resolved, shown: [], changed: false, mistakes: [], key: { kind: 'none' } }
+/** The last few structures found, since every setting redraws the figure
+ *  but only these four change the structure. */
+const found = new Map<string, Resolved>()
+function resolveOnce(input: ResolveInput) {
+  const key = JSON.stringify([input.formula, input.which, input.rule, input.shape])
+  let r = found.get(key)
+  if (!r) {
+    r = resolve(input)
+    if (found.size >= 8) found.delete(found.keys().next().value!)
+    found.set(key, r)
+  }
+  return r
+}
+
+export function figureOf(settings: LewisSettings): Figure {
+  const resolved = resolveOnce(settings)
+  if (!resolved.ok) return { settings, resolved, shown: [], changes: [], changed: false, centralChanged: false, mistakes: [], key: { kind: 'none' } }
 
   const forms = resolved.correct
-  const form = forms[Math.min(s.form, forms.length) - 1]
-  const around = s.central ? aroundCentral(resolved, s.central, s.rule, s.shape) : undefined
+  const form = forms[Math.min(settings.form, forms.length) - 1]
+  const around = settings.central ? aroundCentral(resolved, settings.central, settings.rule, settings.shape) : undefined
+  const changes = settings.formalCharges ? settings.changes : settings.changes.filter((c) => c.kind !== 'label')
+  const changed = changes.length > 0 || around !== undefined
+  const s: LewisSettings = changed ? { ...settings, scaffold: 'full', resonance: 'one' } : settings
   const start = around?.structure ?? form
-  const changed = s.changes.length > 0 || around !== undefined
-  const shown = changed ? [applyChanges(start, s.changes)] : s.resonance === 'all' ? forms : [form]
+  const shown = changed ? [applyChanges(start, changes)] : s.resonance === 'all' ? forms : [form]
 
   const mistakes = changed
     ? findMistakes({ structure: shown[0], correct: forms, name: resolved.name, rule: s.rule, formalCharges: s.formalCharges, shouldBeCentral: around?.shouldBe })
@@ -82,5 +100,5 @@ export function figureOf(s: LewisSettings): Figure {
       : s.scaffold !== 'full'
         ? { kind: 'structures', structures: shown }
         : { kind: 'none' }
-  return { resolved, start, shown, changed, mistakes, key }
+  return { settings: s, resolved, start, shown, changes, changed, centralChanged: around !== undefined, mistakes, key }
 }

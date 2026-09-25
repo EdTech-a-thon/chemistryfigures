@@ -172,6 +172,14 @@ export const LISTED: Listed[] = [
     bonds: [[0, 3], [1, 4], [2, 3], [2, 4], [2, 5]],
   },
   {
+    id: 'hydrogen-carbonate',
+    names: ['hydrogen carbonate', 'bicarbonate'],
+    formula: 'HCO3-',
+    atoms: [['H', -2, 0], ['C', 0, 0], ['O', -1, 0], ['O', 1, 0], ['O', 0, -1]],
+    bonds: [[0, 2], [1, 2], [1, 3], [1, 4]],
+    charge: -1,
+  },
+  {
     id: 'sulfuric-acid',
     names: ['sulfuric acid'],
     formula: 'H2SO4',

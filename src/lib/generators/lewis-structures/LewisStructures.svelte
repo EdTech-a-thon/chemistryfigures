@@ -46,8 +46,10 @@
   const r = $derived(result.resolved)
   const found = $derived(r.ok ? r : undefined)
   const forms = $derived(found?.correct.length ?? 0)
-  const changeCount = $derived(s.changes.length + (result.changed && s.central ? 1 : 0))
-  const canChange = $derived(!!found && s.scaffold === 'full' && (s.resonance === 'one' || forms < 2))
+  /** The settings as drawn: a changed structure is one structure in full. */
+  const drawn = $derived(result.settings)
+  const changeCount = $derived(result.changes.length + (result.centralChanged ? 1 : 0))
+  const canChange = $derived(!!found && drawn.scaffold === 'full' && (drawn.resonance === 'one' || forms < 2))
   /** What's drawn and changed: the structure with the changes made. */
   const current = $derived(result.changed ? result.shown[0] : result.start)
   const centrals = $derived(found ? centralChoices(found) : [])
@@ -63,11 +65,11 @@
 
   const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`
 
-  /** Clears the changes before something that starts from another structure,
-   *  asking first. False when the teacher would rather keep them. */
+  /** Clears the changes and selection before something that starts from
+   *  another structure, asking first if there are changes. False when the
+   *  teacher would rather keep them. */
   function clearChanges() {
-    if (!changeCount) return true
-    if (!confirm(`This clears your ${plural(changeCount, 'change')} to the structure. Go ahead?`)) return false
+    if (changeCount && !confirm(`This clears your ${plural(changeCount, 'change')} to the structure. Go ahead?`)) return false
     s.changes = []
     s.central = ''
     selected = null
@@ -134,13 +136,16 @@
 
   const structureSummary = $derived(found ? (found.listed ? `${found.name}, ${found.listed.names[0]}` : found.name) : 'No structure')
   const lookSummary = $derived(
-    [SHAPE_NAMES[s.shape], s.formalCharges ? 'formal charges' : '', found?.ruleMatters ? RULE_NAMES[s.rule].toLowerCase() : '', forms > 1 && s.resonance === 'all' ? 'all resonance structures' : '']
+    [SHAPE_NAMES[s.shape], s.formalCharges ? 'formal charges' : '', found?.ruleMatters ? RULE_NAMES[s.rule].toLowerCase() : '', forms > 1 && drawn.resonance === 'all' ? 'all resonance structures' : '']
       .filter(Boolean)
       .join(', '),
   )
   const changesSummary = $derived(
     !result.changed ? 'Correct structure' : `${plural(changeCount, 'change')}, ${result.mistakes.length ? plural(result.mistakes.length, 'mistake') : 'still correct'}`,
   )
+  /** Formal charges to pick from: the usual ones, and whatever the atom has now. */
+  const chargeOptions = (now: number) => [...new Set([-4, -3, -2, -1, 0, 1, 2, 3, 4, now])].sort((a, b) => a - b)
+
   const keySummary = $derived(
     [s.titleMode === 'text' && s.title ? `“${s.title}”` : 'No title', s.answerKey && result.key.kind !== 'none' ? 'answer key' : 'no answer key'].join(', '),
   )
@@ -226,10 +231,10 @@
       {/if}
       {#if forms > 1}
         <p class="field-label spaced">Resonance structures</p>
-        {@render segmented('Resonance structures', ['one', 'all'] as const, s.resonance, { one: 'Show one', all: `Show all ${forms}` }, (v) => {
-          if (v !== s.resonance && clearChanges()) s.resonance = v
+        {@render segmented('Resonance structures', ['one', 'all'] as const, drawn.resonance, { one: 'Show one', all: `Show all ${forms}` }, (v) => {
+          if (v !== drawn.resonance && clearChanges()) s.resonance = v
         })}
-        {#if s.resonance === 'one'}
+        {#if drawn.resonance === 'one'}
           <div class="chips forms" role="radiogroup" aria-label="Which resonance structure">
             {#each Array.from({ length: forms }, (_, i) => i + 1) as n (n)}
               <button
@@ -249,16 +254,16 @@
       {/if}
     </Section>
 
-    <Section title="Question" summary={SCAFFOLD_NAMES[s.scaffold]} icon={SquareDashed}>
+    <Section title="Question" summary={SCAFFOLD_NAMES[drawn.scaffold]} icon={SquareDashed}>
       <p class="field-label">Give students</p>
       <div class="chips" role="radiogroup" aria-label="Give students">
         {#each SCAFFOLDS as scaffold (scaffold)}
           <button
             type="button"
             role="radio"
-            aria-checked={s.scaffold === scaffold}
+            aria-checked={drawn.scaffold === scaffold}
             class="chip small"
-            class:on={s.scaffold === scaffold}
+            class:on={drawn.scaffold === scaffold}
             disabled={result.changed && scaffold !== 'full'}
             onclick={() => (s.scaffold = scaffold)}
           >
@@ -267,7 +272,7 @@
         {/each}
       </div>
       <p class="note">
-        {result.changed ? 'A changed structure is always drawn in full. Reset it to make a “complete this” question.' : SCAFFOLD_NOTES[s.scaffold]}
+        {result.changed ? 'A changed structure is always drawn in full. Reset it to make a “complete this” question.' : SCAFFOLD_NOTES[drawn.scaffold]}
       </p>
     </Section>
 
@@ -275,7 +280,7 @@
       <div bind:this={changesBox}>
         {#if !found}
           <p class="note">Type a formula first.</p>
-        {:else if s.scaffold !== 'full'}
+        {:else if drawn.scaffold !== 'full'}
           <p class="note">Changes need the full structure. Set Question to Full structure to make a “find the mistake” question.</p>
         {:else if !canChange}
           <p class="note">Changes need one structure. Show one resonance structure to change it.</p>
@@ -331,7 +336,7 @@
                   <label class="inline small-label">
                     <span>Formal charge</span>
                     <select value={String(shownFormalCharge(current, i))} onchange={(e) => change({ kind: 'label', atom: i, label: Number(e.currentTarget.value) })}>
-                      {#each [-3, -2, -1, 0, 1, 2, 3] as n (n)}<option value={String(n)}>{n ? signed(n) : 'None'}</option>{/each}
+                      {#each chargeOptions(shownFormalCharge(current, i)) as n (n)}<option value={String(n)}>{n ? signed(n) : 'None'}</option>{/each}
                     </select>
                   </label>
                 {/if}
@@ -380,15 +385,15 @@
     <Section title="Title and answer key" summary={keySummary} icon={Type}>
       <p class="field-label">Chart title</p>
       <LabelField name="Chart title" bind:mode={s.titleMode} bind:text={s.title} placeholder="e.g. Draw the Lewis structure" blank={false} />
-      <label class="check" class:off={!result.changed && s.scaffold === 'full'}>
-        <input type="checkbox" bind:checked={s.answerKey} disabled={!result.changed && s.scaffold === 'full'} />
+      <label class="check" class:off={!result.changed && drawn.scaffold === 'full'}>
+        <input type="checkbox" bind:checked={s.answerKey} disabled={!result.changed && drawn.scaffold === 'full'} />
         <span>
           <strong><KeyRound size={15} aria-hidden="true" /> Answer key</strong>
           <small>
             {result.changed
-              ? 'List the structure’s mistakes under the result.'
-              : s.scaffold !== 'full'
-                ? 'Draw the full structure under the result.'
+              ? 'List the structure’s mistakes under the figure.'
+              : drawn.scaffold !== 'full'
+                ? 'Draw the full structure under the figure.'
                 : 'Choose a question or change the structure to add an answer key.'}
           </small>
         </span>
@@ -396,7 +401,7 @@
     </Section>
   {/snippet}
   {#snippet figure()}
-    <LewisFigure settings={s} figure={result} bind:svg {selected} onselect={canChange ? select : undefined} />
+    <LewisFigure figure={result} bind:svg {selected} onselect={canChange ? select : undefined} />
   {/snippet}
 </GeneratorPage>
 
