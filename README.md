@@ -13,6 +13,8 @@ and `docs/adr/` for decisions.
   a typed volume.
 - `/mass-reading` **Mass Reading**: a digital or triple beam balance showing
   a typed mass.
+- `/temperature-reading` **Temperature Reading**: a liquid-in-glass or digital
+  probe thermometer showing a typed temperature in °C, K or °F.
 - `/about`, `/privacy`, `/sitemap.xml`, `/robots.txt`
 
 Every page has the top bar: the site name, the current generator, and a

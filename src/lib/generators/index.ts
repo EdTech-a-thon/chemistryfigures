@@ -4,6 +4,7 @@
 
 import type { Component } from 'svelte'
 import MassReadingPreview from './mass-reading/Preview.svelte'
+import TemperatureReadingPreview from './temperature-reading/Preview.svelte'
 import VolumeByDisplacementPreview from './volume-by-displacement/Preview.svelte'
 import VolumeReadingPreview from './volume-reading/Preview.svelte'
 
@@ -53,6 +54,16 @@ export const GENERATORS: Generator[] = [
       'Make printable balance figures for chemistry tests. Type a mass and get a digital, analytical or triple beam balance showing it, for students to read.',
     keywords: ['balance', 'scale', 'digital', 'analytical', 'electronic', 'triple', 'beam', 'mass', 'grams', 'weigh', 'weight', 'measurement', 'lab'],
     Preview: MassReadingPreview,
+  },
+  {
+    id: 'temperature-reading',
+    name: 'Temperature Reading',
+    path: '/temperature-reading',
+    blurb: 'A liquid-in-glass or digital thermometer showing the temperature you type.',
+    description:
+      'Make printable thermometer figures for chemistry tests. Type a temperature in Celsius, Kelvin or Fahrenheit and students read it from a liquid-in-glass thermometer, with a magnified view for the estimated digit, or from a digital probe thermometer.',
+    keywords: ['thermometer', 'temperature', 'celsius', 'kelvin', 'fahrenheit', 'degrees', 'digital', 'probe', 'alcohol', 'mercury', 'measurement', 'lab'],
+    Preview: TemperatureReadingPreview,
   },
 ]
 

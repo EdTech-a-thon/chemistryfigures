@@ -69,6 +69,18 @@ _Avoid_: Scale, beam balance
 The weight slid along one beam of a triple beam balance.
 _Avoid_: Slider, poise, weight
 
+**Liquid-in-glass thermometer**:
+A temperature instrument whose colored liquid rises from a bulb up a fine bore past a scale marked every 1 °C (−10 to 110 °C), 1 K (260 to 390 K) or 2 °F (10 to 230 °F), read at the flat top of the column.
+_Avoid_: Glass thermometer, alcohol thermometer, mercury thermometer
+
+**Digital thermometer**:
+A temperature instrument whose handheld meter shows 0 to 2 decimal places, wired to a steel probe standing in a beaker; it reads −50 to 150 °C or the same range in K or °F.
+_Avoid_: Probe (alone), temperature probe, electronic thermometer
+
+**Unit**:
+The temperature scale a thermometer reads in: Celsius (°C), Kelvin (K, never °K) or Fahrenheit (°F). Changing it converts the reading.
+_Avoid_: Scale (that is the marks), degrees
+
 **Volume by displacement**:
 Finding an object's volume from how far it raises the water in a graduated cylinder: the after reading minus the before reading. A figure shows the cylinder before and after, side by side.
 _Avoid_: Water displacement (fine in search keywords, not as the name)
