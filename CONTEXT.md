@@ -43,7 +43,7 @@ The value an instrument shows, which the teacher types and students read back. O
 _Avoid_: Value, measurement, answer
 
 **Graduated cylinder**:
-A volume instrument in 10, 25, 50 or 100 mL, labeled every tenth of its capacity.
+A volume instrument in 10, 25, 50, 100, 250 or 1000 mL, labeled every tenth of its capacity except where real ones differ (the 250 mL has 2 mL marks from 10 mL up, numbered 10, 30, 50… 250, and can't read below 10 mL). Volume by displacement uses only the four smaller sizes.
 _Avoid_: Measuring cylinder
 
 **Buret**:

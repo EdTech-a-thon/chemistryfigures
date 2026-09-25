@@ -10,11 +10,11 @@
   import Section from '$lib/shared/Section.svelte'
   import { generatorState } from '$lib/shared/generatorState.svelte'
   import { LIQUID_TINTS, LIQUID_TINT_NAMES } from '../volume-reading/liquid'
-  import { CYLINDER_SIZES, formatReading, type CylinderSize } from '../volume-reading/scale'
+  import { formatReading, type CylinderSize } from '../volume-reading/scale'
   import DisplacementFigure from './DisplacementFigure.svelte'
   import { MARBLE_COUNTS, OBJECTS, OBJECT_NAMES, objectName } from './objects'
   import { displacedVolume, fixReadings, randomReadings } from './readings'
-  import { DISPLACEMENT_VIEWS, DISPLACEMENT_VIEW_NAMES, answerLine, cylinderScale, displacementSettings, objectInCylinder } from './settings'
+  import { DISPLACEMENT_SIZES, DISPLACEMENT_VIEWS, DISPLACEMENT_VIEW_NAMES, answerLine, cylinderScale, displacementSettings, objectInCylinder } from './settings'
 
   const gen = generatorState(displacementSettings, 'volume-by-displacement')
   const s = gen.s
@@ -45,7 +45,7 @@
   {#snippet settings()}
     <Section title="Graduated cylinder" summary="{s.size} mL" icon={FlaskConical} open>
       <div class="chips" role="radiogroup" aria-label="Graduated cylinder size">
-        {#each CYLINDER_SIZES as size (size)}
+        {#each DISPLACEMENT_SIZES as size (size)}
           <button type="button" role="radio" aria-checked={s.size === size} class="chip" class:on={s.size === size} onclick={() => resize(size)}>
             {size} mL
           </button>

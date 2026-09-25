@@ -97,7 +97,7 @@
         label="Reading"
         value={s.reading}
         decimals={scale.decimals}
-        min={0}
+        min={scale.lowest}
         max={scale.capacity}
         unit="mL"
         onchange={(v) => (s.reading = roundReading(scale, v))}

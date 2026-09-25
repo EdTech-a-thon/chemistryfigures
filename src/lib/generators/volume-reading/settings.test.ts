@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { magnifierView, volumeSettings } from './settings'
 
+describe('the reading in the address', () => {
+  it('reaches the top of the 1000 mL cylinder', () => {
+    expect(volumeSettings.fromParams(new URLSearchParams('size=1000&reading=870')).reading).toBe(870)
+  })
+})
+
 describe('the magnifier for each instrument', () => {
   it('a beaker has none unless the teacher turns it on', () => {
     const beaker = volumeSettings.fromParams(new URLSearchParams('instrument=beaker'))

@@ -4,7 +4,7 @@ import { figureTextFields } from '$lib/shared/figureText'
 import { choice, defineSettings, number, text } from '$lib/shared/settings'
 import { cylinderLayout } from '../volume-reading/cylinder'
 import { LIQUID_TINTS } from '../volume-reading/liquid'
-import { CYLINDER_SIZES, formatReading, volumeScale, type CylinderSize } from '../volume-reading/scale'
+import { formatReading, volumeScale, type CylinderSize } from '../volume-reading/scale'
 import { AREA_PER_RISE, OBJECTS, drawnArea, placeObject } from './objects'
 import { displacedVolume, fixReadings } from './readings'
 
@@ -13,11 +13,15 @@ export const DISPLACEMENT_VIEWS = ['whole', 'both'] as const
 export type DisplacementView = (typeof DISPLACEMENT_VIEWS)[number]
 export const DISPLACEMENT_VIEW_NAMES: Record<DisplacementView, string> = { whole: 'Cylinders only', both: 'Cylinders and magnifiers' }
 
+/** The cylinders an object is dropped into: not the 250 or 1000 mL, which
+ *  Volume Reading has but a displacement question doesn't need. */
+export const DISPLACEMENT_SIZES = ['10', '25', '50', '100'] as const satisfies readonly CylinderSize[]
+
 export const cylinderScale = (size: CylinderSize) => volumeScale({ instrument: 'cylinder', size, beaker: 'medium' })
 
 export const displacementSettings = defineSettings(
   {
-    size: choice(CYLINDER_SIZES, '10'),
+    size: choice(DISPLACEMENT_SIZES, '10'),
     before: number({ min: 0, max: 100, fallback: 4 }),
     after: number({ min: 0, max: 100, fallback: 6 }),
     tint: choice(LIQUID_TINTS, 'gray'),

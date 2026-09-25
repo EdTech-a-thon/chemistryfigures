@@ -28,7 +28,7 @@
   const liquid = $derived(LIQUID_COLORS[tint])
   // A cylinder isn't marked at 0.
   const shown = $derived(
-    legibleMarks(marks({ ...scale, max: scale.capacity }), scale.minorEvery * at.perMl * zoom, 16).filter((m) => m.value > 0),
+    legibleMarks(marks({ ...scale, from: scale.lowest, max: scale.capacity }), scale.minorEvery * at.perMl * zoom, 16).filter((m) => m.value > 0),
   )
 
   const surface = $derived(meniscusCurve(at.left, at.right, at.yOf(reading), at.meniscus))

@@ -4,7 +4,7 @@
 export const INSTRUMENTS = ['cylinder', 'buret', 'beaker'] as const
 export type Instrument = (typeof INSTRUMENTS)[number]
 
-export const CYLINDER_SIZES = ['10', '25', '50', '100'] as const
+export const CYLINDER_SIZES = ['10', '25', '50', '100', '250', '1000'] as const
 export type CylinderSize = (typeof CYLINDER_SIZES)[number]
 
 export const BEAKER_SIZES = ['small', 'medium', 'large'] as const
@@ -19,6 +19,8 @@ export interface VolumeInstrument {
 
 export interface Scale {
   capacity: number
+  /** mL at the lowest mark; below it the glass is unmarked */
+  lowest: number
   /** mL between numbered marks */
   labelEvery: number
   /** mL between the smallest marks */
@@ -29,18 +31,23 @@ export interface Scale {
   readsDown: boolean
 }
 
-// Numbered every tenth of capacity, except the 50 mL cylinder: it has 1 mL
-// marks, like real ones, rather than 0.5 mL, and is numbered every 10 mL like
-// the 100 mL so it gets the same medium mark halfway between numbers.
-const CYLINDERS: Record<CylinderSize, Omit<Scale, 'decimals' | 'readsDown'>> = {
+type Marks = Omit<Scale, 'decimals' | 'readsDown' | 'lowest'> & { lowest?: number }
+
+// Numbered every tenth of capacity, except where real cylinders differ: the
+// 50 mL has 1 mL marks rather than 0.5 mL, and is numbered every 10 mL like
+// the 100 mL so it gets the same medium mark halfway between numbers; the
+// 250 mL has 2 mL marks from 10 mL up, numbered 10, 30, 50… 250.
+const CYLINDERS: Record<CylinderSize, Marks> = {
   '10': { capacity: 10, labelEvery: 1, minorEvery: 0.1 },
   '25': { capacity: 25, labelEvery: 5, minorEvery: 0.25 },
   '50': { capacity: 50, labelEvery: 10, minorEvery: 1 },
   '100': { capacity: 100, labelEvery: 10, minorEvery: 1 },
+  '250': { capacity: 250, lowest: 10, labelEvery: 20, minorEvery: 2 },
+  '1000': { capacity: 1000, labelEvery: 100, minorEvery: 10 },
 }
 
 // Beakers are marked coarsely, like real ones: a line every 10, 25 or 50 mL.
-const BEAKERS: Record<BeakerSize, Omit<Scale, 'decimals' | 'readsDown'>> = {
+const BEAKERS: Record<BeakerSize, Marks> = {
   small: { capacity: 50, labelEvery: 10, minorEvery: 10 },
   medium: { capacity: 250, labelEvery: 50, minorEvery: 25 },
   large: { capacity: 600, labelEvery: 100, minorEvery: 50 },
@@ -50,9 +57,9 @@ const BEAKERS: Record<BeakerSize, Omit<Scale, 'decimals' | 'readsDown'>> = {
 const estimatedDecimals = (minorEvery: number) => Math.max(0, Math.ceil(-Math.log10(minorEvery) - 1e-9) + 1)
 
 export function volumeScale({ instrument, size, beaker }: VolumeInstrument): Scale {
-  const marks =
+  const marks: Marks =
     instrument === 'buret' ? { capacity: 50, labelEvery: 1, minorEvery: 0.1 } : instrument === 'beaker' ? BEAKERS[beaker] : CYLINDERS[size]
-  return { ...marks, decimals: estimatedDecimals(marks.minorEvery), readsDown: instrument === 'buret' }
+  return { ...marks, lowest: marks.lowest ?? 0, decimals: estimatedDecimals(marks.minorEvery), readsDown: instrument === 'buret' }
 }
 
 /** What a figure's instrument is called, e.g. "250 mL beaker". */
@@ -63,7 +70,7 @@ export function instrumentName(choice: VolumeInstrument): string {
 }
 
 export function roundReading(scale: Scale, value: number): number {
-  const clamped = Math.min(scale.capacity, Math.max(0, value))
+  const clamped = Math.min(scale.capacity, Math.max(scale.lowest, value))
   return Number(clamped.toFixed(scale.decimals))
 }
 

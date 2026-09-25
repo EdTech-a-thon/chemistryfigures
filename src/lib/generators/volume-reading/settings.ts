@@ -11,7 +11,7 @@ export const volumeSettings = defineSettings(
     instrument: choice(INSTRUMENTS, 'cylinder'),
     size: choice(CYLINDER_SIZES, '100'),
     beaker: choice(BEAKER_SIZES, 'medium'),
-    reading: number({ min: 0, max: 600, fallback: 43.6 }),
+    reading: number({ min: 0, max: 1000, fallback: 43.6 }),
     view: choice(MAGNIFIER_VIEWS, 'both'),
     // A beaker's coarse marks read fine without a magnifier, so it has its
     // own setting, off unless the teacher turns it on.
