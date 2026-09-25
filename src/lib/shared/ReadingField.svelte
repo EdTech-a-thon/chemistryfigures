@@ -62,7 +62,7 @@
       <button type="button" class="btn-ghost random" onclick={onrandom}><Dices size={17} aria-hidden="true" /> Random</button>
     {/if}
   </div>
-  <p class="hint">From {min} to {max} {unit}, to {decimals === 1 ? 'one decimal place' : `${decimals} decimal places`}.</p>
+  <p class="hint">From {min} to {max} {unit}, {decimals === 0 ? 'in whole numbers' : decimals === 1 ? 'to one decimal place' : `to ${decimals} decimal places`}.</p>
 </div>
 
 <style>

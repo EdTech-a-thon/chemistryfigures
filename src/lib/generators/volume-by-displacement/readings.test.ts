@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { volumeScale } from '../volume-reading/scale'
 import { displacedVolume, fixReadings, randomReadings } from './readings'
+import { cylinderScale } from './settings'
 
-const cyl10 = volumeScale('cylinder', '10')
-const cyl25 = volumeScale('cylinder', '25')
-const cyl100 = volumeScale('cylinder', '100')
+const cyl10 = cylinderScale('10')
+const cyl25 = cylinderScale('25')
+const cyl100 = cylinderScale('100')
 
 describe('the before and after readings', () => {
   it('round to the estimated digit', () => {

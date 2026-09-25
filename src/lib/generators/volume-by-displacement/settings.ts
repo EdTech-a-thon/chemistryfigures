@@ -13,7 +13,7 @@ export const DISPLACEMENT_VIEWS = ['whole', 'both'] as const
 export type DisplacementView = (typeof DISPLACEMENT_VIEWS)[number]
 export const DISPLACEMENT_VIEW_NAMES: Record<DisplacementView, string> = { whole: 'Cylinders only', both: 'Cylinders and magnifiers' }
 
-export const cylinderScale = (size: CylinderSize) => volumeScale('cylinder', size)
+export const cylinderScale = (size: CylinderSize) => volumeScale({ instrument: 'cylinder', size, beaker: 'medium' })
 
 export const displacementSettings = defineSettings(
   {

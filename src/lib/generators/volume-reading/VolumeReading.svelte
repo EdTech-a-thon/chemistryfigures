@@ -11,16 +11,27 @@
   import { MAGNIFIER_VIEW_NAMES } from '$lib/shared/magnify'
   import VolumeFigure from './VolumeFigure.svelte'
   import { LIQUID_TINTS, LIQUID_TINT_NAMES } from './liquid'
-  import { CYLINDER_SIZES, INSTRUMENTS, formatReading, randomReading, roundReading, volumeScale, type CylinderSize, type Instrument } from './scale'
+  import {
+    BEAKER_SIZES,
+    CYLINDER_SIZES,
+    INSTRUMENTS,
+    formatReading,
+    instrumentName,
+    randomReading,
+    roundReading,
+    volumeScale,
+    type BeakerSize,
+    type VolumeInstrument,
+  } from './scale'
   import { answerLine, volumeSettings } from './settings'
 
   const gen = generatorState(volumeSettings, 'volume-reading')
   const s = gen.s
   let svg = $state<SVGSVGElement>()
 
-  const INSTRUMENT_NAMES: Record<Instrument, string> = { cylinder: 'Graduated cylinder', buret: 'Buret' }
-  const scale = $derived(volumeScale(s.instrument, s.size))
-  const instrumentName = $derived(s.instrument === 'buret' ? '50 mL buret' : `${s.size} mL graduated cylinder`)
+  const INSTRUMENT_NAMES: Record<VolumeInstrument['instrument'], string> = { cylinder: 'Graduated cylinder', buret: 'Buret', beaker: 'Beaker' }
+  const BEAKER_NAMES: Record<BeakerSize, string> = { small: 'Small', medium: 'Medium', large: 'Large' }
+  const scale = $derived(volumeScale(s))
 
   const textSummary = $derived(
     [s.titleMode === 'text' && s.title ? `“${s.title}”` : 'No title', s.answerKey ? 'answer key' : 'no answer key'].join(', '),
@@ -28,11 +39,11 @@
 
   /** A new instrument or size keeps the reading at the same fraction of
    *  capacity, so 80 of 100 mL becomes 8 of 10. */
-  function change(instrument: Instrument, size: CylinderSize) {
-    const next = volumeScale(instrument, size)
-    s.reading = roundReading(next, (s.reading / scale.capacity) * next.capacity)
-    s.instrument = instrument
-    s.size = size
+  function change(choice: Partial<VolumeInstrument>) {
+    const next = { instrument: s.instrument, size: s.size, beaker: s.beaker, ...choice }
+    const nextScale = volumeScale(next)
+    s.reading = roundReading(nextScale, (s.reading / scale.capacity) * nextScale.capacity)
+    Object.assign(s, next)
   }
 </script>
 
@@ -43,10 +54,10 @@
   {svg}
 >
   {#snippet settings()}
-    <Section title="Instrument" summary={instrumentName} icon={FlaskConical} open>
+    <Section title="Instrument" summary={instrumentName(s)} icon={FlaskConical} open>
       <div class="segmented" role="radiogroup" aria-label="Instrument">
         {#each INSTRUMENTS as instrument (instrument)}
-          <button type="button" role="radio" aria-checked={s.instrument === instrument} class:on={s.instrument === instrument} onclick={() => change(instrument, s.size)}>
+          <button type="button" role="radio" aria-checked={s.instrument === instrument} class:on={s.instrument === instrument} onclick={() => change({ instrument })}>
             {INSTRUMENT_NAMES[instrument]}
           </button>
         {/each}
@@ -55,8 +66,17 @@
         <p class="field-label">Size</p>
         <div class="chips" role="radiogroup" aria-label="Graduated cylinder size">
           {#each CYLINDER_SIZES as size (size)}
-            <button type="button" role="radio" aria-checked={s.size === size} class="chip" class:on={s.size === size} onclick={() => change('cylinder', size)}>
+            <button type="button" role="radio" aria-checked={s.size === size} class="chip" class:on={s.size === size} onclick={() => change({ size })}>
               {size} mL
+            </button>
+          {/each}
+        </div>
+      {:else if s.instrument === 'beaker'}
+        <p class="field-label">Size</p>
+        <div class="chips" role="radiogroup" aria-label="Beaker size">
+          {#each BEAKER_SIZES as beaker (beaker)}
+            <button type="button" role="radio" aria-checked={s.beaker === beaker} class="chip" class:on={s.beaker === beaker} onclick={() => change({ beaker })}>
+              {BEAKER_NAMES[beaker]} · {volumeScale({ ...s, beaker }).capacity} mL
             </button>
           {/each}
         </div>

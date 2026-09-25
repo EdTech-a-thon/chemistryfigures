@@ -50,6 +50,10 @@ _Avoid_: Measuring cylinder
 A 50 mL volume instrument that reads from 0 at the top down to 50, drained through a stopcock at the bottom.
 _Avoid_: Burette, buerette
 
+**Beaker**:
+A volume instrument in small (50 mL), medium (250 mL) or large (600 mL), coarsely marked every 10, 25 or 50 mL and read to the whole mL.
+_Avoid_: Cup, jar
+
 **Meniscus**:
 The curved top surface of a liquid; a volume reading is taken at its bottom.
 

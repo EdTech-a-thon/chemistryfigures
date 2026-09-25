@@ -26,3 +26,13 @@ export function meniscusCurve(left: number, right: number, y: number, depth: num
     `C ${right - 0.22 * w} ${y} ${right - 0.04 * w} ${y - 0.4 * depth} ${right} ${top}`
   )
 }
+
+/** The meniscus in a wide vessel like a beaker: flat across the middle at
+ *  `y`, climbing `depth` up each wall only within `edge` of it. */
+export function flatMeniscusCurve(left: number, right: number, y: number, depth: number, edge: number) {
+  const top = y - depth
+  return (
+    `M ${left} ${top} C ${left + 0.15 * edge} ${y - 0.3 * depth} ${left + 0.45 * edge} ${y} ${left + edge} ${y} ` +
+    `H ${right - edge} C ${right - 0.45 * edge} ${y} ${right - 0.15 * edge} ${y - 0.3 * depth} ${right} ${top}`
+  )
+}
