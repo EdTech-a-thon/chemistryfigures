@@ -1,7 +1,7 @@
 <script lang="ts">
   // Particle Diagram: list the kinds of atoms, ions, molecules and ion
   // clusters, say how many of each, and get a box with them scattered in it.
-  import { Atom, Dices, Plus, Square, Trash2, Type } from '@lucide/svelte'
+  import { Atom, Dices, List, Plus, Square, Trash2, Type } from '@lucide/svelte'
   import GeneratorPage from '$lib/shared/GeneratorPage.svelte'
   import LabelField from '$lib/shared/LabelField.svelte'
   import Section from '$lib/shared/Section.svelte'
@@ -9,19 +9,32 @@
   import LookSettings from './LookSettings.svelte'
   import ParticleFigure from './ParticleFigure.svelte'
   import ShapePicker from './ShapePicker.svelte'
-  import { DEFAULT_OUTER, MAX_COUNT, MAX_KINDS, describeKind, kindName, type ParticleKind } from './particles'
-  import { BORDERS, boxParticles, newSeed, particleSettings, type Border } from './settings'
+  import { DEFAULT_OUTER, MAX_COUNT, MAX_KINDS, MAX_NAME, describeKind, kindName, type ParticleKind } from './particles'
+  import { BORDERS, MAX_NOTE, SHOWS, boxParticles, newSeed, particleSettings, type Border, type Show } from './settings'
 
   const gen = generatorState(particleSettings, 'particle-diagram')
   const s = gen.s
   let svg = $state<SVGSVGElement>()
 
   const BORDER_NAMES: Record<Border, string> = { single: 'Single', double: 'Double', none: 'None' }
+  const SHOW_NAMES: Record<Show, string> = { box: 'Box only', both: 'Box and key', key: 'Key only' }
+  const KEY_EXAMPLES: Record<ReturnType<typeof kindName>, string> = {
+    Atom: 'e.g. Ne atom',
+    Ion: 'e.g. Any positive ion',
+    Molecule: 'e.g. CCl₄ molecule',
+    'Ion cluster': 'e.g. NaCl ion pair',
+  }
   const box = $derived(boxParticles(s))
   const particlesSummary = $derived(s.particles.map(describeKind).join(', '))
 
   function setCount(kind: ParticleKind, value: number) {
     if (Number.isFinite(value)) kind.count = Math.min(MAX_COUNT, Math.max(0, Math.round(value)))
+  }
+
+  /** An empty name is left out, so the kind is stored as it was before. */
+  function setName(kind: ParticleKind, value: string) {
+    if (value.trim()) kind.name = value.slice(0, MAX_NAME)
+    else delete kind.name
   }
 
   function addKind() {
@@ -71,11 +84,37 @@
         {/if}
         <button type="button" class="btn-ghost small" onclick={() => (s.seed = newSeed())}><Dices size={17} aria-hidden="true" /> Shuffle</button>
       </div>
-      {#if box.missing}
+      {#if box.missing && s.show !== 'key'}
         <p class="warning" role="status">
           {box.missing} particle{box.missing === 1 ? ' doesn’t' : 's don’t'} fit in the box. Try smaller atoms or fewer particles.
         </p>
       {/if}
+    </Section>
+    <Section title="Key" summary={SHOW_NAMES[s.show]} icon={List}>
+      <p class="field-label">Show</p>
+      <div class="segmented" role="radiogroup" aria-label="Show">
+        {#each SHOWS as show (show)}
+          <button type="button" role="radio" aria-checked={s.show === show} class:on={s.show === show} onclick={() => (s.show = show)}>
+            {SHOW_NAMES[show]}
+          </button>
+        {/each}
+      </div>
+      {#each s.particles as kind, i (i)}
+        <label class="key-field">
+          <span>{kindName(kind)} {i + 1} name</span>
+          <input
+            type="text"
+            maxlength={MAX_NAME}
+            placeholder={KEY_EXAMPLES[kindName(kind)]}
+            value={kind.name ?? ''}
+            oninput={(e) => setName(kind, e.currentTarget.value)}
+          />
+        </label>
+      {/each}
+      <label class="key-field">
+        <span>Note</span>
+        <input type="text" maxlength={MAX_NOTE} placeholder="e.g. H₂O molecules are not shown" bind:value={s.keyNote} />
+      </label>
     </Section>
     <Section title="Box" summary="{BORDER_NAMES[s.border]} border" icon={Square}>
       <p class="field-label">Border</p>
@@ -108,4 +147,6 @@
   .small { padding: 0.5rem 0.85rem; font-size: 0.9rem; }
   .warning { margin: 0.75rem 0 0; padding: 0.55rem 0.75rem; border-radius: 10px; background: var(--red-soft); color: #991b1b; font-size: 0.85rem; }
   .field-label { margin: 0 0 0.45rem; font-weight: 700; font-size: 0.9rem; }
+  .key-field { display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.85rem; font-size: 0.9rem; font-weight: 700; }
+  .key-field input { font-weight: 400; }
 </style>

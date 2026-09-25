@@ -16,6 +16,13 @@ export const DOUBLE_INSET = 6
 
 export const MAX_SEED = 999999
 
+/** What the figure shows: the box, the box and its key, or just the key
+ *  (so answer choices made one at a time can share one key). */
+export const SHOWS = ['box', 'both', 'key'] as const
+export type Show = (typeof SHOWS)[number]
+
+export const MAX_NOTE = 80
+
 const DEFAULT_KINDS: ParticleKind[] = [
   { count: 4, shape: 'single', look: { size: 'l', shade: 'light', charge: '-' }, outer: { ...DEFAULT_OUTER } },
   { count: 4, shape: 'single', look: { size: 's', shade: 'white', charge: '+' }, outer: { ...DEFAULT_OUTER } },
@@ -26,6 +33,8 @@ export const particleSettings = defineSettings(
     particles: json(DEFAULT_KINDS, tidyKinds),
     seed: number({ min: 1, max: MAX_SEED, fallback: 2 }),
     border: choice(BORDERS, 'single'),
+    show: choice(SHOWS, 'box'),
+    keyNote: text('', MAX_NOTE),
     titleMode: choice(['none', 'text'] as const, 'none'),
     title: text(''),
   },

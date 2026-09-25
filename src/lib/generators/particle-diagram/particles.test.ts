@@ -34,6 +34,16 @@ describe('particle kinds from the address or storage', () => {
     expect(tidyKinds({ count: 1 })).toBeUndefined()
     expect(tidyKinds(['x', ion])).toEqual([ion])
   })
+
+  it('keeps a key name, clipped to 40 characters', () => {
+    expect(tidyKinds([{ ...ion, name: 'Any negative ion' }])![0].name).toBe('Any negative ion')
+    expect(tidyKinds([{ ...ion, name: 'x'.repeat(50) }])![0].name).toBe('x'.repeat(40))
+  })
+
+  it('leaves out an empty or unusable key name, so kinds without one are unchanged', () => {
+    for (const name of ['', '   ', 7, null]) expect(tidyKinds([{ ...ion, name }])).toEqual([ion])
+    expect(JSON.stringify(tidyKinds([ion]))).toBe(JSON.stringify([ion]))
+  })
 })
 
 describe('naming and labeling', () => {

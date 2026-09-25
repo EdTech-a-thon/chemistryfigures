@@ -80,10 +80,13 @@ export interface ParticleKind {
   look: Look
   /** every outer disc; not drawn when the shape is alone */
   outer: Look
+  /** what the key calls it; kept only when not empty */
+  name?: string
 }
 
 export const MAX_KINDS = 4
 export const MAX_COUNT = 60
+export const MAX_NAME = 40
 
 const isJoined = (kind: ParticleKind) => kind.shape !== 'single'
 
@@ -125,13 +128,16 @@ export function tidyLook(v: unknown): Look {
 export function tidyKind(v: unknown): ParticleKind | undefined {
   if (!isObject(v)) return undefined
   const count = typeof v.count === 'number' && Number.isFinite(v.count) ? Math.round(v.count) : 1
-  return {
+  const kind: ParticleKind = {
     count: Math.min(MAX_COUNT, Math.max(0, count)),
     // kinds from before molecules had no shape or outer look: they stay alone
     shape: oneOf(SHAPES, v.shape, 'single'),
     look: tidyLook(v.look),
     outer: isObject(v.outer) ? tidyLook(v.outer) : { ...DEFAULT_OUTER },
   }
+  const name = typeof v.name === 'string' ? v.name.slice(0, MAX_NAME) : ''
+  if (name.trim()) kind.name = name
+  return kind
 }
 
 /** Up to four valid kinds, or undefined when there are none at all. */
