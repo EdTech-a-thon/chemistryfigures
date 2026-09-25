@@ -106,7 +106,7 @@
         {#if shrunk}
           There’s too little water to cover an object this big, so it’s drawn smaller. Raise the readings to fix this.
         {:else}
-          Drawn to look about right for its volume, not to scale.
+          Note: not to scale.
         {/if}
       </p>
     </Section>
