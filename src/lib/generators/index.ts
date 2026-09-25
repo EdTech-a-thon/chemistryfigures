@@ -4,6 +4,7 @@
 
 import type { Component } from 'svelte'
 import MassReadingPreview from './mass-reading/Preview.svelte'
+import OrbitalDiagramPreview from './orbital-diagram/Preview.svelte'
 import ParticleDiagramPreview from './particle-diagram/Preview.svelte'
 import TemperatureReadingPreview from './temperature-reading/Preview.svelte'
 import VolumeByDisplacementPreview from './volume-by-displacement/Preview.svelte'
@@ -75,6 +76,16 @@ export const GENERATORS: Generator[] = [
       'Make printable particle diagrams for AP Chemistry tests. Pick the atoms, ions and molecules, their sizes, shades and charges, and how many of each, and get them scattered in a box or packed in an ionic or alloy lattice, with a key.',
     keywords: ['particulate', 'particles', 'atom', 'atoms', 'ion', 'ions', 'molecule', 'molecules', 'lattice', 'alloy', 'solid', 'liquid', 'gas', 'solution', 'ionic', 'AP', 'diagram', 'model', 'representation'],
     Preview: ParticleDiagramPreview,
+  },
+  {
+    id: 'orbital-diagram',
+    name: 'Orbital Diagram',
+    path: '/orbital-diagram',
+    blurb: 'Any atom or ion’s electron configuration as arrows in orbital boxes.',
+    description:
+      'Make printable orbital diagrams for chemistry tests. Pick an element and charge and get its electron configuration drawn as arrows in boxes, following the aufbau principle, Pauli exclusion and Hund’s rule, with exceptions, noble gas cores, blanks for students and deliberate mistakes.',
+    keywords: ['electron', 'configuration', 'orbital', 'orbitals', 'notation', 'box', 'boxes', 'arrows', 'spin', 'aufbau', 'hund', 'hunds', 'pauli', 'exclusion', 'sublevel', 'subshell', 'noble', 'gas', 'core', 'shorthand', 'excited', 'ground', 'state', 'ion', 'AP'],
+    Preview: OrbitalDiagramPreview,
   },
 ]
 
