@@ -3,6 +3,7 @@
 // folder and one entry here.
 
 import type { Component } from 'svelte'
+import LewisStructuresPreview from './lewis-structures/Preview.svelte'
 import MassReadingPreview from './mass-reading/Preview.svelte'
 import ParticleDiagramPreview from './particle-diagram/Preview.svelte'
 import TemperatureReadingPreview from './temperature-reading/Preview.svelte'
@@ -75,6 +76,16 @@ export const GENERATORS: Generator[] = [
       'Make printable particle diagrams for AP Chemistry tests. Pick the atoms, ions and molecules, their sizes, shades and charges, and how many of each, and get them scattered in a box or packed in an ionic or alloy lattice, with a key.',
     keywords: ['particulate', 'particles', 'atom', 'atoms', 'ion', 'ions', 'molecule', 'molecules', 'lattice', 'alloy', 'solid', 'liquid', 'gas', 'solution', 'ionic', 'AP', 'diagram', 'model', 'representation'],
     Preview: ParticleDiagramPreview,
+  },
+  {
+    id: 'lewis-structures',
+    name: 'Lewis Structures',
+    path: '/lewis-structures',
+    blurb: 'The Lewis structure of a molecule or ion, correct or with mistakes to find.',
+    description:
+      'Make printable Lewis structures for chemistry tests. Type a formula like H2O or SO4 2- and get its Lewis dot structure, with formal charges and resonance structures, a structure for students to complete, or a wrong one for students to find the mistakes in.',
+    keywords: ['lewis', 'dot', 'electron', 'structure', 'structures', 'diagram', 'lone', 'pair', 'pairs', 'bond', 'bonds', 'bonding', 'covalent', 'molecule', 'polyatomic', 'ion', 'octet', 'formal', 'charge', 'resonance', 'valence', 'VSEPR'],
+    Preview: LewisStructuresPreview,
   },
 ]
 

@@ -1,0 +1,64 @@
+import { describe, expect, it } from 'vitest'
+import { correctStructures, findCentral, starSkeleton } from './build'
+import { drawStructure, type Drawing } from './drawing'
+import { parseFormula } from './formula'
+import { placeStar } from './layout'
+import type { Structure } from './structure'
+
+function placed(text: string) {
+  const parsed = parseFormula(text)
+  if (!parsed.ok) throw new Error(parsed.message)
+  const central = findCentral(parsed.formula)
+  if (!central.ok) throw new Error(central.reason)
+  return placeStar(correctStructures(starSkeleton(parsed.formula, central.central), 'octet')[0], central.central, 'flat')
+}
+
+const finite = (d: Drawing) =>
+  [d.width, d.height, ...d.symbols.flatMap((t) => [t.x, t.y]), ...d.lines.flatMap((l) => [l.x1, l.y1, l.x2, l.y2]), ...d.dots.flatMap((p) => [p.x, p.y])].every(
+    Number.isFinite,
+  )
+
+const inside = (d: Drawing) => d.dots.every((p) => p.x > 0 && p.y > 0 && p.x < d.width && p.y < d.height)
+
+describe('drawing a structure', () => {
+  it('draws a dot for every lone electron and a line for every bond line', () => {
+    const co2 = drawStructure(placed('CO2'))
+    expect(co2.dots).toHaveLength(8)
+    expect(co2.lines).toHaveLength(4)
+    expect(co2.symbols.map((t) => t.text)).toEqual(['C', 'O', 'O'])
+    expect(finite(co2) && inside(co2)).toBe(true)
+  })
+
+  it('draws an ion in brackets with its charge', () => {
+    const so4 = drawStructure(placed('SO4 2-'))
+    expect(so4.brackets).toBeDefined()
+    expect(so4.charge?.text).toBe('2−')
+    expect(drawStructure(placed('CH4')).brackets).toBeUndefined()
+  })
+
+  it('draws formal charges only when asked, and only where they aren’t 0', () => {
+    expect(drawStructure(placed('NH4+')).labels).toEqual([])
+    expect(drawStructure(placed('NH4+'), { formalCharges: true }).labels.map((l) => l.text)).toEqual(['+1'])
+  })
+
+  it('leaves out bonds and electrons for a skeleton', () => {
+    const d = drawStructure(placed('CO2'), { bonds: false, electrons: false })
+    expect(d.lines).toEqual([])
+    expect(d.dots).toEqual([])
+    expect(d.symbols).toHaveLength(3)
+    expect(d.bondSpots).toHaveLength(2)
+  })
+
+  it('draws impossible structures without breaking', () => {
+    const ch4 = placed('CH4')
+    const odd: Structure = {
+      ...ch4,
+      atoms: ch4.atoms.map((a, i) => ({ ...a, lone: i === 0 ? 7 : i === 1 ? 3 : 0 })),
+      bonds: ch4.bonds.map((b, k) => ({ ...b, order: k === 0 ? 3 : k === 1 ? 0 : 1 })),
+    }
+    const d = drawStructure(odd, { formalCharges: true })
+    expect(finite(d)).toBe(true)
+    expect(d.dots).toHaveLength(10)
+    expect(d.lines).toHaveLength(5)
+  })
+})
