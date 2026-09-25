@@ -158,7 +158,7 @@ A figure of one atom or ion: a nucleus of protons and neutrons with electrons as
 _Avoid_: Atom (that's a particle diagram's disc), atomic model (fine in search keywords), atom builder
 
 **Nucleus**:
-The center of a Bohr model, drawn either as text (the proton and neutron counts in black in a white circle, never an element symbol) or as a cluster of proton and neutron balls, mixed at random from a seed with a Shuffle button as in a particle diagram. Balls are drawn only up to 40 protons and neutrons combined; above that the nucleus is text and the settings say so. It can be left blank (an empty circle) for "how many protons?" questions.
+The center of a Bohr model, drawn either as text (the proton and neutron counts in black in a pale gray circle, never an element symbol) or as a cluster of proton and neutron balls, mixed at random from a seed with a Shuffle button as in a particle diagram. Balls are drawn only up to 40 protons and neutrons combined; above that the nucleus is text and the settings say so. It can be left blank (the empty pale circle) for "how many protons?" questions.
 _Avoid_: Core, center
 
 **Proton** / **Neutron** / **Electron**:
