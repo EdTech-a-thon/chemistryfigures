@@ -13,8 +13,8 @@
     max: number
     unit: string
     onchange: (value: number) => void
-    /** picks a random valid reading */
-    onrandom: () => void
+    /** picks a random valid reading; without it there's no Random button */
+    onrandom?: () => void
   }
   let { label, value, decimals, min, max, unit, onchange, onrandom }: Props = $props()
 
@@ -58,7 +58,9 @@
       onchange={commit}
     />
     <span class="unit">{unit}</span>
-    <button type="button" class="btn-ghost random" onclick={onrandom}><Dices size={17} aria-hidden="true" /> Random</button>
+    {#if onrandom}
+      <button type="button" class="btn-ghost random" onclick={onrandom}><Dices size={17} aria-hidden="true" /> Random</button>
+    {/if}
   </div>
   <p class="hint">From {min} to {max} {unit}, to {decimals === 1 ? 'one decimal place' : `${decimals} decimal places`}.</p>
 </div>

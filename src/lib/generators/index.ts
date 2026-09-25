@@ -4,6 +4,7 @@
 
 import type { Component } from 'svelte'
 import MassReadingPreview from './mass-reading/Preview.svelte'
+import VolumeByDisplacementPreview from './volume-by-displacement/Preview.svelte'
 import VolumeReadingPreview from './volume-reading/Preview.svelte'
 
 export interface Generator {
@@ -32,6 +33,16 @@ export const GENERATORS: Generator[] = [
       'Make printable graduated cylinder and buret figures for chemistry tests. Type a volume and students read it from the meniscus, with a magnified view for the estimated digit.',
     keywords: ['graduated', 'cylinder', 'buret', 'burette', 'meniscus', 'volume', 'mL', 'milliliters', 'measurement', 'lab', 'glassware'],
     Preview: VolumeReadingPreview,
+  },
+  {
+    id: 'volume-by-displacement',
+    name: 'Volume by Displacement',
+    path: '/volume-by-displacement',
+    blurb: 'A graduated cylinder before and after an object is dropped in.',
+    description:
+      'Make printable water displacement figures for chemistry tests. Type the before and after readings and get two graduated cylinders, with an object in the second, for students to find its volume.',
+    keywords: ['water', 'displacement', 'displaced', 'graduated', 'cylinder', 'object', 'marble', 'rock', 'cube', 'irregular', 'solid', 'volume', 'density', 'mL', 'measurement', 'lab'],
+    Preview: VolumeByDisplacementPreview,
   },
   {
     id: 'mass-reading',
