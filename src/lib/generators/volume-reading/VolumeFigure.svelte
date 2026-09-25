@@ -11,7 +11,7 @@
   import { buretLayout } from './buret'
   import { cylinderLayout } from './cylinder'
   import { formatReading, instrumentName, volumeScale } from './scale'
-  import { answerLine, type VolumeSettings } from './settings'
+  import { answerLine, magnifierView, type VolumeSettings } from './settings'
 
   let { settings, svg = $bindable() }: { settings: VolumeSettings; svg?: SVGSVGElement } = $props()
 
@@ -24,7 +24,7 @@
     y: at.yOf(settings.reading),
     r: (settings.span * scale.labelEvery * at.perMl) / 2,
   })
-  const layout = $derived(magnifierLayout(settings.view, at.width, at.height, source))
+  const layout = $derived(magnifierLayout(magnifierView(settings), at.width, at.height, source))
   const label = $derived(`A ${instrumentName(settings)} reading ${formatReading(scale, settings.reading)} mL`)
 </script>
 

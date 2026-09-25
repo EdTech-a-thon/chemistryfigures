@@ -13,6 +13,9 @@ export const volumeSettings = defineSettings(
     beaker: choice(BEAKER_SIZES, 'medium'),
     reading: number({ min: 0, max: 600, fallback: 43.6 }),
     view: choice(MAGNIFIER_VIEWS, 'both'),
+    // A beaker's coarse marks read fine without a magnifier, so it has its
+    // own setting, off unless the teacher turns it on.
+    beakerView: choice(MAGNIFIER_VIEWS, 'whole'),
     span: number({ min: 1, max: 6, fallback: 3 }),
     tint: choice(LIQUID_TINTS, 'gray'),
     ...figureTextFields(),
@@ -21,6 +24,9 @@ export const volumeSettings = defineSettings(
 )
 
 export type VolumeSettings = typeof volumeSettings.defaults
+
+/** The magnifier view for the chosen instrument. */
+export const magnifierView = (s: VolumeSettings) => (s.instrument === 'beaker' ? s.beakerView : s.view)
 
 /** The answer key line, e.g. "Reading: 23.47 mL". */
 export const answerLine = (s: VolumeSettings) =>

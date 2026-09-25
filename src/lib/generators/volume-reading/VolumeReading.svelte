@@ -23,7 +23,7 @@
     type BeakerSize,
     type VolumeInstrument,
   } from './scale'
-  import { answerLine, volumeSettings } from './settings'
+  import { answerLine, magnifierView, volumeSettings } from './settings'
 
   const gen = generatorState(volumeSettings, 'volume-reading')
   const s = gen.s
@@ -104,8 +104,12 @@
         onrandom={() => (s.reading = randomReading(scale))}
       />
     </Section>
-    <Section title="Magnifier" summary={MAGNIFIER_VIEW_NAMES[s.view]} icon={ZoomIn}>
-      <MagnifierSettings bind:view={s.view} bind:span={s.span} />
+    <Section title="Magnifier" summary={MAGNIFIER_VIEW_NAMES[magnifierView(s)]} icon={ZoomIn}>
+      {#if s.instrument === 'beaker'}
+        <MagnifierSettings bind:view={s.beakerView} bind:span={s.span} />
+      {:else}
+        <MagnifierSettings bind:view={s.view} bind:span={s.span} />
+      {/if}
     </Section>
     <Section title="Title and answer key" summary={textSummary} icon={Type}>
       <FigureTextSettings bind:titleMode={s.titleMode} bind:title={s.title} bind:answerKey={s.answerKey} answer={answerLine(s)} />
