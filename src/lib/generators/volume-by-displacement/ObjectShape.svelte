@@ -20,9 +20,8 @@
     <path d="M {x + 0.18 * w} {y + 0.36 * h} Q {x + 0.45 * w} {y + 0.26 * h} {x + 0.7 * w} {y + 0.42 * h} L {x + 0.9 * w} {y + 0.46 * h}" fill="none" stroke-width={1.1 * k} />
     <path d="M {x + 0.7 * w} {y + 0.42 * h} Q {x + 0.64 * w} {y + 0.68 * h} {x + 0.72 * w} {y + 0.92 * h}" fill="none" stroke-width={1.1 * k} />
   {:else}
-    {@const { x, y, a, depth: d } = placed}
-    <path d="M {x} {y} L {x + d} {y - d} H {x + a + d} L {x + a} {y} Z" fill="#e0e0e0" />
-    <path d="M {x + a} {y} L {x + a + d} {y - d} V {y + a - d} L {x + a} {y + a} Z" fill="#8a8a8a" />
-    <rect {x} {y} width={a} height={a} fill="#b8b8b8" />
+    {@const { x, y, a, front, side } = placed}
+    <rect {x} {y} width={front} height={a} fill="#b8b8b8" />
+    <rect x={x + front} {y} width={side} height={a} fill="#8a8a8a" />
   {/if}
 </g>

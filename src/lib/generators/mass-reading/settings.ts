@@ -3,6 +3,7 @@
 import { figureTextFields } from '$lib/shared/figureText'
 import { MAGNIFIER_VIEW_NAMES } from '$lib/shared/magnify'
 import { choice, defineSettings, number } from '$lib/shared/settings'
+import { PAN_OBJECTS } from './panObject'
 import { PAN_CONTENTS, digitalBalance, randomMass, roundMass, type DecimalPlaces } from './digital'
 import { TRIPLE_BEAM_CAPACITY, TRIPLE_BEAM_DECIMALS, randomTripleBeamMass, roundTripleBeam } from './tripleBeam'
 
@@ -25,14 +26,19 @@ export const massSettings = defineSettings(
   {
     instrument: choice(MASS_INSTRUMENTS, 'triple-beam'),
     decimals: number({ min: 1, max: 4, fallback: 2 }),
+    /** the digital balance's own contents: a weigh boat, a beaker or nothing */
     pan: choice(PAN_CONTENTS, 'boat'),
+    /** an object from Volume by Displacement on either balance's pan, in
+     *  place of the digital balance's contents */
+    object: choice(PAN_OBJECTS, 'none'),
+    marbles: number({ min: 1, max: 5, fallback: 2 }),
     mass: number({ min: 0, max: 1000, fallback: 24.73 }),
     view: choice(MASS_VIEWS, 'both'),
     span: number({ min: 1, max: 6, fallback: 3 }),
     ...figureTextFields(),
   },
   (s) => {
-    const fixed = { ...s, decimals: Math.round(s.decimals), span: Math.round(s.span) }
+    const fixed = { ...s, decimals: Math.round(s.decimals), marbles: Math.round(s.marbles), span: Math.round(s.span) }
     return { ...fixed, mass: massRules(fixed).round(s.mass) }
   },
 )

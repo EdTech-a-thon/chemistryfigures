@@ -14,6 +14,8 @@
     beamH: 24,
     /** drawing units per gram on the front beam */
     frontPerGram: 33.6,
+    /** the pan's middle and its top surface, where an object rests */
+    pan: { cx: 98, top: 142 },
   }
   export const frontRiderX = (front: number) => TRIPLE_BEAM.markStart + front * TRIPLE_BEAM.frontPerGram
   /** the front rider's point, where the magnifier centers */
@@ -32,12 +34,20 @@
 <script lang="ts">
   // A triple beam balance with its riders placed for a mass, drawn at `zoom`
   // (1 for the whole balance; more inside a magnifier on the front beam).
-  // `beamsOnly` leaves out the base, the pan and its arm, and the pointer.
+  // `beamsOnly` leaves out the base, the pan and its arm (and any object on
+  // the pan), and the pointer.
   import { legibleMarks, marks } from '$lib/shared/marks'
   import { sizeAt } from '$lib/shared/magnify'
+  import type { Placed } from '../volume-by-displacement/objects'
+  import ObjectShape from '../volume-by-displacement/ObjectShape.svelte'
   import { splitRiders } from './tripleBeam'
 
-  let { mass, zoom = 1, beamsOnly = false }: { mass: number; zoom?: number; beamsOnly?: boolean } = $props()
+  let {
+    mass,
+    zoom = 1,
+    beamsOnly = false,
+    object = null,
+  }: { mass: number; zoom?: number; beamsOnly?: boolean; object?: Placed | null } = $props()
 
   const B = TRIPLE_BEAM
   const k = $derived(sizeAt(zoom))
@@ -96,6 +106,9 @@
     <rect x="8" y="254" width="676" height="34" rx="10" fill="#fff" stroke="#111" stroke-width={2 * k} />
     <rect x="88" y="158" width="20" height="96" fill="#fff" stroke="#111" stroke-width={2 * k} />
     <path d="M 18 142 H 178 L 168 154 Q 98 162 28 154 Z" fill="#fff" stroke="#111" stroke-width={2 * k} />
+    {#if object}
+      <ObjectShape placed={object} {k} />
+    {/if}
 
     <!-- the arm from the pan to the block holding the beams, which rests on a knife-edge pivot -->
     <rect x="108" y="164" width={x0 - 126} height="9" fill="#fff" stroke="#111" stroke-width={2 * k} />

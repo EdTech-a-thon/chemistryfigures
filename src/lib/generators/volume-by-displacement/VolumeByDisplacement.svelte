@@ -2,13 +2,14 @@
   // Volume by Displacement: pick a graduated cylinder, type the water's
   // reading before and after the object goes in, and get a figure students
   // find the object's volume from.
-  import { Circle, Dices, FlaskConical, Ruler, Type, ZoomIn } from '@lucide/svelte'
+  import { ArrowUpRight, Circle, Dices, FlaskConical, Ruler, Type, ZoomIn } from '@lucide/svelte'
   import FigureTextSettings from '$lib/shared/FigureTextSettings.svelte'
   import GeneratorPage from '$lib/shared/GeneratorPage.svelte'
   import MagnifierSettings from '$lib/shared/MagnifierSettings.svelte'
   import ReadingField from '$lib/shared/ReadingField.svelte'
   import Section from '$lib/shared/Section.svelte'
   import { generatorState } from '$lib/shared/generatorState.svelte'
+  import { massSettings } from '../mass-reading/settings'
   import { LIQUID_TINTS, LIQUID_TINT_NAMES } from '../volume-reading/liquid'
   import { formatReading, type CylinderSize } from '../volume-reading/scale'
   import DisplacementFigure from './DisplacementFigure.svelte'
@@ -29,6 +30,9 @@
   const textSummary = $derived(
     [s.titleMode === 'text' && s.title ? `“${s.title}”` : 'No title', s.answerKey ? 'answer key' : 'no answer key'].join(', '),
   )
+
+  /** Mass Reading with the same object on the balance's pan. */
+  const massLink = $derived(`/mass-reading?${massSettings.toQuery({ ...massSettings.defaults, object: s.object, marbles: s.marbles })}`)
 
   const setReadings = (before: number, after: number) => Object.assign(s, fixReadings(scale, before, after))
 
@@ -109,6 +113,9 @@
           Note: not to scale.
         {/if}
       </p>
+      <p class="note">
+        Tip: <a href={massLink} target="_blank" rel="noopener">Mass Reading<ArrowUpRight size={13} aria-hidden="true" /><span class="visually-hidden"> (opens in a new tab)</span></a> can put the same {s.object} on a balance, for a density question.
+      </p>
     </Section>
     <Section title="Magnifiers" summary={DISPLACEMENT_VIEW_NAMES[s.view]} icon={ZoomIn}>
       <MagnifierSettings bind:view={s.view} bind:span={s.span} views={DISPLACEMENT_VIEWS} names={DISPLACEMENT_VIEW_NAMES} />
@@ -136,6 +143,9 @@
   .field-label { margin: 0.9rem 0 0.45rem; font-weight: 700; font-size: 0.9rem; }
   .readings { display: flex; flex-direction: column; gap: 0.9rem; }
   .note { margin: 0.7rem 0 0; color: var(--muted); font-size: 0.85rem; }
+  .note a { color: var(--blue-dark); font-weight: 600; text-decoration: none; }
+  .note a:hover { text-decoration: underline; }
+  .note a :global(svg) { vertical-align: -0.1em; margin-left: 0.05rem; }
   .random { margin-top: 0.8rem; padding: 0.5rem 0.8rem; font-size: 0.9rem; }
   .field { display: flex; flex-direction: column; gap: 0.35rem; }
   .field + .field { margin-top: 0.8rem; }

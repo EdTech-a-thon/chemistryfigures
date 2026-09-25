@@ -34,9 +34,11 @@ export type Placed =
   | { kind: 'marbles'; marbles: Circle[] }
   /** the box the rock's outline fills */
   | { kind: 'rock'; x: number; y: number; w: number; h: number }
-  /** the front face's top left corner and side; the top and right faces
-   *  recede `depth` up and to the right */
-  | { kind: 'cube'; x: number; y: number; a: number; depth: number }
+  /** the top left corner and side. Seen level with the bottom it rests
+   *  on, as the pans and the cylinder's base are, and turned a little: a
+   *  face `front` wide with a darker face `side` wide beside it, their top
+   *  and bottom edges level. */
+  | { kind: 'cube'; x: number; y: number; a: number; front: number; side: number }
 
 /** Drawn area per unit of tube width times the height the water rose, which
  *  makes the classic 2 marbles in 2 mL of a 10 mL cylinder about as wide as
@@ -44,13 +46,17 @@ export type Placed =
 export const AREA_PER_RISE = 0.5
 
 /** a rock's width over its height, lying down */
-const ROCK_ASPECT = 1.5
+export const ROCK_ASPECT = 1.5
 /** a rock's height over its width, at most, standing up */
 const ROCK_TALLEST = 1.8
 /** a rock's outline covers this share of its box */
-const ROCK_FILL = 0.78
-/** a cube's receding faces, as a share of its side */
-const CUBE_DEPTH = 0.3
+export const ROCK_FILL = 0.78
+/** how far a cube is turned from facing straight out */
+const CUBE_TURN = (25 * Math.PI) / 180
+const CUBE_FRONT = Math.cos(CUBE_TURN)
+const CUBE_SIDE = Math.sin(CUBE_TURN)
+/** The area a cube with side `a` covers: its two faces. */
+export const cubeArea = (a: number) => a ** 2 * (CUBE_FRONT + CUBE_SIDE)
 
 /** Where `kind` goes in `room` when drawn with about `area` square units. */
 export function placeObject(kind: ObjectKind, count: number, room: Room, area: number): Placed {
@@ -86,10 +92,10 @@ export function placeObject(kind: ObjectKind, count: number, room: Room, area: n
     return { kind, x: cx - w / 2, y: room.bottom - h, w, h }
   }
 
-  const a0 = Math.sqrt(area / (1 + CUBE_DEPTH))
-  const a = a0 * fit(a0 * (1 + CUBE_DEPTH), a0 * (1 + CUBE_DEPTH))
-  const depth = a * CUBE_DEPTH
-  return { kind, x: cx - (a + depth) / 2, y: room.bottom - a, a, depth }
+  const a0 = Math.sqrt(area / cubeArea(1))
+  const a = a0 * fit(a0 * (CUBE_FRONT + CUBE_SIDE), a0)
+  const [front, side] = [a * CUBE_FRONT, a * CUBE_SIDE]
+  return { kind, x: cx - (front + side) / 2, y: room.bottom - a, a, front, side }
 }
 
 /** The box a placed object fills. */
@@ -103,14 +109,14 @@ export function objectBounds(p: Placed): Room {
     }
   }
   if (p.kind === 'rock') return { left: p.x, right: p.x + p.w, top: p.y, bottom: p.y + p.h }
-  return { left: p.x, right: p.x + p.a + p.depth, top: p.y - p.depth, bottom: p.y + p.a }
+  return { left: p.x, right: p.x + p.front + p.side, top: p.y, bottom: p.y + p.a }
 }
 
 /** The area a placed object covers, to compare with the area asked for. */
 export function drawnArea(p: Placed) {
   if (p.kind === 'marbles') return p.marbles.reduce((sum, m) => sum + Math.PI * m.r ** 2, 0)
   if (p.kind === 'rock') return ROCK_FILL * p.w * p.h
-  return p.a ** 2 * (1 + CUBE_DEPTH)
+  return cubeArea(p.a)
 }
 
 // A lumpy outline around its box, as fractions of it from the top left,
