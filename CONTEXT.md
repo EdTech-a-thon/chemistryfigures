@@ -81,12 +81,20 @@ _Avoid_: Probe (alone), temperature probe, electronic thermometer
 The temperature scale a thermometer reads in: Celsius (°C), Kelvin (K, never °K) or Fahrenheit (°F). Changing it converts the reading.
 _Avoid_: Scale (that is the marks), degrees
 
+**pH meter**:
+A pH instrument wired to a glass pH electrode standing in a beaker. A digital pH meter shows 1 or 2 decimal places; an analog one swings a needle over a dial from 0 to 14, numbered every 1 and marked every 0.2, read to 0.01.
+_Avoid_: pH probe (that's the electrode), pH sensor
+
+**pH paper**:
+Universal indicator paper, drawn as a strip whose wet end has turned the reading's color, above a color chart with one swatch for each whole pH from 0 to 14. It is read to the whole number, and only works printed in color.
+_Avoid_: Litmus paper (litmus only tells acid from base), indicator strip, test strip
+
 **Volume by displacement**:
 Finding an object's volume from how far it raises the water in a graduated cylinder: the after reading minus the before reading. A figure shows the cylinder before and after, side by side.
 _Avoid_: Water displacement (fine in search keywords, not as the name)
 
 **Object**:
-The solid dropped into the cylinder in a volume by displacement figure: one to five marbles, a rock, or a cube. It rests on the bottom, always fully under water, and is drawn plausibly sized rather than to scale.
+The solid dropped into the cylinder in a volume by displacement figure: one to five marbles, a rock, or a cube. It rests on the bottom, always fully under water, and is drawn plausibly sized rather than to scale. The same objects can sit on either balance's pan in a mass reading figure, drawn alike (but always the same size), so a teacher can ask for an object's mass and volume, and so its density.
 _Avoid_: Sample, solid, item
 
 **Before reading** / **After reading**:
@@ -150,3 +158,61 @@ _Avoid_: Container, vessel, frame
 **Key**:
 An optional list beside the box: each particle kind drawn exactly as in the box with a name the teacher types ("Any positive ion", "CCl₄ molecule"), and an optional note line ("H₂O molecules are not shown"). A kind with a count of 0 appears only in the key. The figure can show the box and key, the box only, or the key only, so four answer choices made one at a time can share one key.
 _Avoid_: Legend
+
+### Lewis structures
+
+**Lewis structure**:
+A figure of one molecule or polyatomic ion: element symbols joined by bonds, with each atom's lone electrons drawn as dots around its symbol. A polyatomic ion is drawn inside square brackets with its charge at the top right. The generator is Lewis Structures. Dot-and-cross diagrams aren't drawn.
+_Avoid_: Lewis dot structure (fine in search keywords), electron dot diagram, dot-and-cross diagram (a different figure)
+
+**Structure**:
+The atoms, bonds and lone electrons a Lewis structure shows. It always starts correct, either built from a formula or taken from the list, and the teacher can then change it.
+_Avoid_: Molecule (that's a particle in a particle diagram), drawing
+
+**Central atom**:
+In a structure built from a formula, the one atom every other atom bonds to. The generator picks the least electronegative atom other than H; the teacher can pick another, which is a change.
+_Avoid_: Center atom, middle atom
+
+**Built structure**:
+A structure made by the generator from a formula with one central atom, such as CH₄, H₂O, SF₆ or SO₄²⁻.
+_Avoid_: Generated structure, auto structure
+
+**Listed structure**:
+A structure with more than one central atom, such as ethanol, HCN or N₂H₄, whose correct form is stored by hand because a formula alone doesn't say which atoms bond to which.
+_Avoid_: Preset (that's the teacher's saved settings), template, library molecule
+
+**Bond**:
+One, two or three lines between two atoms for a single, double or triple bond, each line one shared pair of electrons.
+_Avoid_: Line, stick, bonding pair (fine in help text)
+
+**Lone electrons**:
+An atom's electrons that aren't in a bond, counted one at a time and drawn two to a side, with an odd one drawn alone (as in NO or NO₂).
+_Avoid_: Lone pairs (as the setting; they may be odd), nonbonding electrons (fine in help text), dots
+
+**Formal charge**:
+An optional small charge label beside an atom.
+_Avoid_: Charge (alone; that's the ion's overall charge), oxidation number
+
+**Resonance structures**:
+Two or more correct structures for the same molecule or ion that differ only in where the double bonds and lone electrons are, as in O₃ or NO₃⁻. The teacher chooses whether the figure shows one of them (and which) or all of them in a row joined by ↔.
+_Avoid_: Resonance forms, contributing structures
+
+**Shape**:
+How a structure's atoms are placed: flat, with outer atoms and lone electrons on the four sides of each symbol as in most textbooks, or shaped, hinting at the molecule's real shape (bent H₂O, NH₃ with its H atoms spread below). Either way it is a flat drawing, never 3D with wedges.
+_Avoid_: Geometry, VSEPR shape (that's what shaped hints at, not what it draws), layout (that's a particle diagram's)
+
+**Scaffold**:
+How much of the structure a "complete this" question gives the student: the formula only, the skeleton (atoms placed, no bonds or lone electrons), the bonds without lone electrons, or the full structure. With anything less than the full structure, the answer key draws the full structure. A scaffolded structure can't also be changed: a figure is either a "complete this" question or a "find the mistake" question.
+_Avoid_: Hint level, given, blank
+
+**Structure rule**:
+Which correct structure the generator builds when textbooks disagree, as for SO₄²⁻, PO₄³⁻, ClO₄⁻, SO₂ and SO₃: the octet rule (the default; every atom has an octet, with formal charges where needed) or fewest formal charges (period 3 and lower atoms may have more than eight electrons). The check follows the same rule, so it never calls the other textbook's answer a mistake under the rule the teacher picked.
+_Avoid_: Octet setting, expanded octet mode
+
+**Change**:
+A teacher's edit to a structure: a bond's order (including none), an atom's lone electrons or formal charge, the brackets and charge, or the central atom. A structure with any changes is a **changed structure**, and the settings say so.
+_Avoid_: Edit, modification, override, error
+
+**Mistake**:
+One way a changed structure is wrong, written as a sentence ("O has 10 electrons around it", "Total is 18 valence electrons; should be 16", "C should be the central atom"). A change can leave a structure correct, such as another resonance structure, so mistakes come from checking the structure, not from listing changes. The answer key of a changed structure lists its mistakes.
+_Avoid_: Error, problem, issue
