@@ -47,10 +47,13 @@ export interface ParticleKind {
   /** how many are drawn in the box */
   count: number
   look: Look
+  /** what the key calls it; kept only when not empty */
+  name?: string
 }
 
 export const MAX_KINDS = 4
 export const MAX_COUNT = 60
+export const MAX_NAME = 40
 
 /** "Ion" or "Atom", from whether the kind carries a charge. */
 export const kindName = (kind: ParticleKind) => (kind.look.charge ? 'Ion' : 'Atom')
@@ -73,7 +76,10 @@ export function tidyLook(v: unknown): Look {
 export function tidyKind(v: unknown): ParticleKind | undefined {
   if (!isObject(v)) return undefined
   const count = typeof v.count === 'number' && Number.isFinite(v.count) ? Math.round(v.count) : 1
-  return { count: Math.min(MAX_COUNT, Math.max(0, count)), look: tidyLook(v.look) }
+  const kind: ParticleKind = { count: Math.min(MAX_COUNT, Math.max(0, count)), look: tidyLook(v.look) }
+  const name = typeof v.name === 'string' ? v.name.slice(0, MAX_NAME) : ''
+  if (name.trim()) kind.name = name
+  return kind
 }
 
 /** Up to four valid kinds, or undefined when there are none at all. */
