@@ -178,7 +178,7 @@ A structure made by the generator from a formula with one central atom, such as 
 _Avoid_: Generated structure, auto structure
 
 **Listed structure**:
-A structure with more than one central atom, such as ethanol, HCN or N₂H₄, whose correct form is stored by hand because a formula alone doesn't say which atoms bond to which.
+A structure with more than one central atom, such as ethanol, HNO₃ or N₂H₄, whose skeleton (which atoms bond to which) is stored by hand because a formula alone doesn't say. Its electrons are placed the same way as a built structure's, so it follows the structure rule and has its resonance structures. It can be typed by formula or by name.
 _Avoid_: Preset (that's the teacher's saved settings), template, library molecule
 
 **Bond**:

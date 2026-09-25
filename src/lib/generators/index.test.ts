@@ -18,6 +18,11 @@ describe('searching the directory', () => {
       expect(ids(query)).toContain('bohr-model')
   })
 
+  it('finds Lewis Structures the ways teachers ask for it', () => {
+    for (const query of ['lewis dot', 'electron dot', 'lone pair', 'covalent', 'resonance', 'formal charge'])
+      expect(ids(query), query).toContain('lewis-structures')
+  })
+
   it('finds a generator by its path', () => {
     expect(findGenerator('/volume-by-displacement')?.name).toBe('Volume by Displacement')
   })

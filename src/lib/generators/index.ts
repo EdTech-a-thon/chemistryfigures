@@ -4,6 +4,7 @@
 
 import type { Component } from 'svelte'
 import BohrModelPreview from './bohr-model/Preview.svelte'
+import LewisStructuresPreview from './lewis-structures/Preview.svelte'
 import MassReadingPreview from './mass-reading/Preview.svelte'
 import ParticleDiagramPreview from './particle-diagram/Preview.svelte'
 import PhReadingPreview from './ph-reading/Preview.svelte'
@@ -97,6 +98,16 @@ export const GENERATORS: Generator[] = [
       'Make printable Bohr model diagrams for chemistry tests. Set the protons, neutrons and electrons on each shell, or fill the shells for any element, and get the nucleus and rings in your colors, with empty rings or a blank nucleus for students to complete.',
     keywords: ['bohr', 'atom', 'atomic', 'model', 'structure', 'proton', 'protons', 'neutron', 'neutrons', 'electron', 'electrons', 'nucleus', 'shell', 'shells', 'energy', 'level', 'orbit', 'isotope', 'ion', 'diagram'],
     Preview: BohrModelPreview,
+  },
+  {
+    id: 'lewis-structures',
+    name: 'Lewis Structures',
+    path: '/lewis-structures',
+    blurb: 'The Lewis structure of a molecule or ion, correct or with mistakes to find.',
+    description:
+      'Make printable Lewis structures for chemistry tests. Type a formula like H2O or SO4 2- and get its Lewis dot structure, with formal charges and resonance structures, a structure for students to complete, or a wrong one for students to find the mistakes in.',
+    keywords: ['lewis', 'dot', 'electron', 'structure', 'structures', 'diagram', 'lone', 'pair', 'pairs', 'bond', 'bonds', 'bonding', 'covalent', 'molecule', 'polyatomic', 'ion', 'octet', 'formal', 'charge', 'resonance', 'valence', 'VSEPR'],
+    Preview: LewisStructuresPreview,
   },
 ]
 
