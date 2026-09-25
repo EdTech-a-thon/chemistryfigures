@@ -150,3 +150,23 @@ _Avoid_: Container, vessel, frame
 **Key**:
 An optional list beside the box: each particle kind drawn exactly as in the box with a name the teacher types ("Any positive ion", "CCl₄ molecule"), and an optional note line ("H₂O molecules are not shown"). A kind with a count of 0 appears only in the key. The figure can show the box and key, the box only, or the key only, so four answer choices made one at a time can share one key.
 _Avoid_: Legend
+
+### Bohr models
+
+**Bohr model**:
+A figure of one atom or ion: a nucleus of protons and neutrons with electrons as dots on rings around it. The generator is Bohr Model. The teacher sets every count, and nothing is checked, so "wrong" atoms (an overfilled shell, an empty inner shell, 0 protons) draw exactly as set. There is no answer key; the chart title can name the atom. Its nucleus and ring spacing never change, so every Bohr model with the same number of shells is the same size and answer choices made one at a time line up.
+_Avoid_: Atom (that's a particle diagram's disc), atomic model (fine in search keywords), atom builder
+
+**Nucleus**:
+The center of a Bohr model, drawn either as text (the proton and neutron counts in black in a white circle, never an element symbol) or as a cluster of proton and neutron balls, mixed at random from a seed with a Shuffle button as in a particle diagram. Balls are drawn only up to 40 protons and neutrons combined; above that the nucleus is text and the settings say so. It can be left blank (an empty circle) for "how many protons?" questions.
+_Avoid_: Core, center
+
+**Proton** / **Neutron** / **Electron**:
+The three components of a Bohr model, each with a color from a short palette (red proton, gray neutron and blue electron by default) and an optional symbol: +, p or p⁺ for a proton; 0, n or n⁰ for a neutron; −, e or e⁻ for an electron. An electron with a symbol is drawn as a larger dot so the symbol fits. Protons and neutrons are each 0 to 200.
+_Avoid_: Particle (that's a particle diagram's), nucleon (fine in help text)
+
+**Shell**:
+One ring of a Bohr model, numbered from the nucleus out, holding 0 to 32 electrons. The teacher sets how many shells there are (1 to 7) and the electrons on each; a shell may be empty even with electrons outside it. Fill sets them to the neutral atom's real ground-state counts for its proton count (K is 2, 8, 8, 1; Fe is 2, 8, 14, 2). Electrons sit evenly spaced around the ring, or paired at the four compass points as in Lewis structures (up to 8; more are spaced evenly). The rings can be drawn empty for "draw the electrons" questions, and can be labeled n = 1, n = 2….
+_Avoid_: Orbit, energy level (fine in help text), orbital (a different idea)
+
+A Bohr model can have a **key** like a particle diagram's: one proton, neutron and electron drawn exactly as in the figure, with its name.
