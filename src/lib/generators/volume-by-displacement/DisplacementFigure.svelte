@@ -6,7 +6,8 @@
   import GraduatedCylinder from '../volume-reading/GraduatedCylinder.svelte'
   import { cylinderLayout } from '../volume-reading/cylinder'
   import { formatReading } from '../volume-reading/scale'
-  import { answerLine, cylinderScale, type DisplacementSettings } from './settings'
+  import ObjectShape from './ObjectShape.svelte'
+  import { answerLine, cylinderScale, objectInCylinder, type DisplacementSettings } from './settings'
 
   let { settings, svg = $bindable() }: { settings: DisplacementSettings; svg?: SVGSVGElement } = $props()
 
@@ -18,18 +19,22 @@
   const captioned = $derived(!!(settings.beforeCaption.trim() || settings.afterCaption.trim()))
   const width = $derived(2 * at.width + GAP)
   const height = $derived(at.height + (captioned ? CAPTION_H : 0))
-  const marble = $derived((at.tubeW * 0.8) / 2)
+  const object = $derived(objectInCylinder(settings).placed)
+  const OBJECT_NAMES = { marbles: 'marbles', rock: 'a rock', cube: 'a cube' }
+  const objectName = $derived(
+    settings.object === 'marbles' ? (settings.marbles === 1 ? 'a marble' : `${settings.marbles} marbles`) : OBJECT_NAMES[settings.object],
+  )
   const label = $derived(
     `A ${settings.size} mL graduated cylinder reading ${formatReading(scale, settings.before)} mL, ` +
-      `then ${formatReading(scale, settings.after)} mL with an object in it`,
+      `then ${formatReading(scale, settings.after)} mL with ${objectName} in it`,
   )
 </script>
 
-{#snippet cylinder(x: number, reading: number, caption: string, object: boolean)}
+{#snippet cylinder(x: number, reading: number, caption: string, withObject: boolean)}
   <g transform="translate({x} 0)">
     <GraduatedCylinder {scale} size={settings.size} {reading} tint={settings.tint}>
-      {#if object}
-        <circle cx={at.cx} cy={at.innerBottom - marble} r={marble} fill="#9a9a9a" stroke="#111" stroke-width="1.6" />
+      {#if withObject}
+        <ObjectShape placed={object} />
       {/if}
     </GraduatedCylinder>
     {#if caption.trim()}

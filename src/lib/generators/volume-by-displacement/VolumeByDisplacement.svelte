@@ -2,7 +2,7 @@
   // Volume by Displacement: pick a graduated cylinder, type the water's
   // reading before and after the object goes in, and get a figure students
   // find the object's volume from.
-  import { Dices, FlaskConical, Ruler, Type } from '@lucide/svelte'
+  import { Circle, Dices, FlaskConical, Ruler, Type } from '@lucide/svelte'
   import FigureTextSettings from '$lib/shared/FigureTextSettings.svelte'
   import GeneratorPage from '$lib/shared/GeneratorPage.svelte'
   import ReadingField from '$lib/shared/ReadingField.svelte'
@@ -11,15 +11,19 @@
   import { LIQUID_TINTS, type LiquidTint } from '../volume-reading/liquid'
   import { CYLINDER_SIZES, formatReading, type CylinderSize } from '../volume-reading/scale'
   import DisplacementFigure from './DisplacementFigure.svelte'
+  import { MARBLE_COUNTS, OBJECTS, type ObjectKind } from './objects'
   import { displacedVolume, fixReadings, randomReadings } from './readings'
-  import { answerLine, cylinderScale, displacementSettings } from './settings'
+  import { answerLine, cylinderScale, displacementSettings, objectInCylinder } from './settings'
 
   const gen = generatorState(displacementSettings, 'volume-by-displacement')
   const s = gen.s
   let svg = $state<SVGSVGElement>()
 
   const TINT_NAMES: Record<LiquidTint, string> = { gray: 'Gray', blue: 'Blue', red: 'Red', green: 'Green' }
+  const OBJECT_NAMES: Record<ObjectKind, string> = { marbles: 'Marbles', rock: 'Rock', cube: 'Cube' }
   const scale = $derived(cylinderScale(s.size))
+  const shrunk = $derived(objectInCylinder(s).shrunk)
+  const objectSummary = $derived(s.object === 'marbles' ? `${s.marbles} marble${s.marbles === 1 ? '' : 's'}` : OBJECT_NAMES[s.object])
   const mL = (v: number) => `${formatReading(scale, v)} mL`
 
   const readingSummary = $derived(`${mL(s.before)} → ${mL(s.after)}, object ${mL(displacedVolume(scale, s))}`)
@@ -82,6 +86,30 @@
       <button type="button" class="btn-ghost random" onclick={() => Object.assign(s, randomReadings(scale))}>
         <Dices size={17} aria-hidden="true" /> Random readings
       </button>
+    </Section>
+    <Section title="Object" summary={objectSummary} icon={Circle} open>
+      <div class="segmented" role="radiogroup" aria-label="Object">
+        {#each OBJECTS as object (object)}
+          <button type="button" role="radio" aria-checked={s.object === object} class:on={s.object === object} onclick={() => (s.object = object)}>
+            {OBJECT_NAMES[object]}
+          </button>
+        {/each}
+      </div>
+      {#if s.object === 'marbles'}
+        <p class="field-label">How many</p>
+        <div class="chips" role="radiogroup" aria-label="Number of marbles">
+          {#each MARBLE_COUNTS as n (n)}
+            <button type="button" role="radio" aria-checked={s.marbles === n} class="chip" class:on={s.marbles === n} onclick={() => (s.marbles = n)}>{n}</button>
+          {/each}
+        </div>
+      {/if}
+      <p class="note">
+        {#if shrunk}
+          There’s too little water to cover an object this big, so it’s drawn smaller. Raise the readings to fix this.
+        {:else}
+          Drawn to look about right for its volume, not to scale.
+        {/if}
+      </p>
     </Section>
     <Section title="Captions" summary={[s.beforeCaption, s.afterCaption].map((c) => c.trim() || 'none').join(' / ')} icon={Type}>
       <label class="field">
