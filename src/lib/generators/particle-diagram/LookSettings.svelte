@@ -48,9 +48,9 @@
 
 <style>
   .row { display: flex; align-items: flex-start; gap: 0.6rem; margin-top: 0.55rem; }
-  .label { flex: none; width: 3.6rem; padding-top: 0.35rem; font-size: 0.84rem; font-weight: 700; }
+  .label { flex: none; width: 3.3rem; padding-top: 0.35rem; font-size: 0.84rem; font-weight: 700; }
   .options { display: flex; flex-wrap: wrap; gap: 0.25rem; }
-  .small { padding: 0.3rem 0.55rem; font-size: 0.86rem; }
+  .small { padding: 0.3rem 0.5rem; font-size: 0.84rem; }
   .swatch {
     display: grid;
     place-items: center;

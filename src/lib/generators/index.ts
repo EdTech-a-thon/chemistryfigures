@@ -48,9 +48,9 @@ export const GENERATORS: Generator[] = [
     id: 'particle-diagram',
     name: 'Particle Diagram',
     path: '/particle-diagram',
-    blurb: 'Atoms and ions scattered in a box, in the sizes and shades you pick.',
+    blurb: 'Atoms, ions and molecules scattered in a box or packed in a lattice.',
     description:
-      'Make printable particle diagrams for AP Chemistry tests. Pick the atoms and ions, their sizes, shades and charges, and how many of each, and get a box with them scattered in it.',
+      'Make printable particle diagrams for AP Chemistry tests. Pick the atoms, ions and molecules, their sizes, shades and charges, and how many of each, and get them scattered in a box or packed in an ionic or alloy lattice, with a key.',
     keywords: ['particulate', 'particles', 'atom', 'atoms', 'ion', 'ions', 'molecule', 'molecules', 'lattice', 'alloy', 'solid', 'liquid', 'gas', 'solution', 'ionic', 'AP', 'diagram', 'model', 'representation'],
     Preview: ParticleDiagramPreview,
   },

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { particleSettings } from './settings'
+import { RADIUS } from './particles'
+import { BOX_SIDE, boxContents, particleSettings } from './settings'
 
 describe('key settings in the address', () => {
   it('are left out of the address at their defaults', () => {
@@ -24,5 +25,59 @@ describe('key settings in the address', () => {
 
   it('clip the note to 80 characters', () => {
     expect(particleSettings.fromParams(new URLSearchParams('keyNote=' + 'x'.repeat(100))).keyNote).toHaveLength(80)
+  })
+})
+
+describe('what the box holds', () => {
+  const d = particleSettings.defaults
+
+  it('scattered: the fixed square with the particle kinds', () => {
+    const box = boxContents(d)
+    expect(box).toMatchObject({ width: BOX_SIDE, height: BOX_SIDE, border: 'single', kinds: d.particles })
+    expect(box.discs).toHaveLength(8)
+  })
+
+  it('a lattice: a box that just fits the grid, with no border unless one is added', () => {
+    const s = { ...d, layout: 'lattice' as const, pattern: 'pure' as const, rows: 2, columns: 3 }
+    const box = boxContents(s)
+    const r = RADIUS[s.main.size]
+    expect(box).toMatchObject({ width: 6 * r, height: 4 * r, border: 'none' })
+    expect(box.discs).toHaveLength(6)
+    const bordered = boxContents({ ...s, latticeBorder: 'single' })
+    expect(bordered.width).toBeGreaterThan(box.width)
+    expect(bordered.discs[0].x).toBeGreaterThan(box.discs[0].x)
+  })
+
+  it('a lattice keeps the scattered particles for when the teacher switches back', () => {
+    const s = particleSettings.fromParams(new URLSearchParams(particleSettings.toQuery({ ...d, layout: 'lattice' })))
+    expect(s.particles).toEqual(d.particles)
+  })
+
+  it('a lattice’s key lists its one or two atoms or ions, with their names', () => {
+    const lattice = { ...d, layout: 'lattice' as const, mainName: 'Cl⁻ ion', secondName: 'Na⁺ ion' }
+    expect(boxContents({ ...lattice, pattern: 'pure' }).kinds.map((k) => [k.look, k.name])).toEqual([[d.main, 'Cl⁻ ion']])
+    expect(boxContents({ ...lattice, pattern: 'alternate' }).kinds.map((k) => [k.look, k.name])).toEqual([
+      [d.main, 'Cl⁻ ion'],
+      [d.second, 'Na⁺ ion'],
+    ])
+  })
+
+  it('counts second atoms beyond the lattice’s room', () => {
+    const s = { ...d, layout: 'lattice' as const, pattern: 'interstitial' as const, rows: 2, columns: 2, secondCount: 3 }
+    expect(boxContents(s).missing).toBe(2)
+  })
+})
+
+describe('lattice settings in the address', () => {
+  it('round rows and columns to whole numbers from 1 to 12', () => {
+    const s = particleSettings.fromParams(new URLSearchParams('rows=3.6&columns=40'))
+    expect([s.rows, s.columns]).toEqual([4, 12])
+  })
+
+  it('tidy the two looks like any other', () => {
+    const main = JSON.stringify({ size: 'xl', shade: 'dark', charge: '2+' })
+    const s = particleSettings.fromParams(new URLSearchParams(`main=${encodeURIComponent(main)}&second=nonsense`))
+    expect(s.main).toEqual({ size: 'xl', shade: 'dark', charge: '2+' })
+    expect(s.second).toEqual(particleSettings.defaults.second)
   })
 })

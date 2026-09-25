@@ -13,8 +13,9 @@ and `docs/adr/` for decisions.
   a typed volume.
 - `/mass-reading` **Mass Reading**: a digital or triple beam balance showing
   a typed mass.
-- `/particle-diagram` **Particle Diagram**: atoms and ions scattered in a
-  box, in the sizes, shades and charges the teacher picks.
+- `/particle-diagram` **Particle Diagram**: atoms, ions, molecules and ion
+  clusters scattered in a box, or atoms and ions packed in a lattice, with
+  an optional key.
 - `/about`, `/privacy`, `/sitemap.xml`, `/robots.txt`
 
 Every page has the top bar: the site name, the current generator, and a

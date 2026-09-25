@@ -110,18 +110,21 @@ export interface FigureLayout {
   key?: Place
 }
 
+type Size = { width: number; height: number }
+
 /** The figure's size and where the box and key go in it for a Show
  *  setting. With both, the key is to the right of the box and the two are
- *  centered on each other; whichever is taller sets the height. */
-export function figureLayout(show: Show, key: { width: number; height: number }): FigureLayout {
-  if (show === 'box') return { width: BOX_SIDE, height: BOX_SIDE, box: { x: 0, y: 0 } }
+ *  centered on each other; whichever is taller sets the height. The box is
+ *  the scattered square unless a lattice's box is given. */
+export function figureLayout(show: Show, key: Size, box: Size = { width: BOX_SIDE, height: BOX_SIDE }): FigureLayout {
+  if (show === 'box') return { width: box.width, height: box.height, box: { x: 0, y: 0 } }
   if (show === 'key') return { width: key.width, height: key.height, key: { x: 0, y: 0 } }
-  const height = Math.max(BOX_SIDE, key.height)
+  const height = Math.max(box.height, key.height)
   return {
-    width: BOX_SIDE + KEY_GAP + key.width,
+    width: box.width + KEY_GAP + key.width,
     height,
-    box: { x: 0, y: (height - BOX_SIDE) / 2 },
-    key: { x: BOX_SIDE + KEY_GAP, y: (height - key.height) / 2 },
+    box: { x: 0, y: (height - box.height) / 2 },
+    key: { x: box.width + KEY_GAP, y: (height - key.height) / 2 },
   }
 }
 

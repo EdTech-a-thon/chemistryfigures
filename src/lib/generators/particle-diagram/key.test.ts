@@ -127,6 +127,12 @@ describe('the figure for each show setting', () => {
     expect(f.key).toEqual({ x: BOX_SIDE + KEY_GAP, y: (BOX_SIDE - key.height) / 2 })
   })
 
+  it('fits a lattice’s box of its own size beside the key', () => {
+    const f = figureLayout('both', key, { width: 120, height: 400 })
+    expect(f).toEqual({ width: 120 + KEY_GAP + key.width, height: 400, box: { x: 0, y: 0 }, key: { x: 120 + KEY_GAP, y: (400 - key.height) / 2 } })
+    expect(figureLayout('box', key, { width: 120, height: 80 })).toMatchObject({ width: 120, height: 80 })
+  })
+
   it('grows to hold a key taller than the box, keeping them centered on each other', () => {
     const tall = { ...key, height: BOX_SIDE + 100 }
     const f = figureLayout('both', tall)

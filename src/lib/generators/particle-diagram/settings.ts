@@ -1,20 +1,29 @@
 // Particle Diagram's settings, as they appear in the page address.
 
 import { choice, defineSettings, json, number, text } from '$lib/shared/settings'
+import { LATTICE_PATTERNS, LATTICE_SPACINGS, lattice } from './lattice'
 import { scatter } from './layout'
-import { DEFAULT_OUTER, tidyKinds, type ParticleKind } from './particles'
+import { DEFAULT_OUTER, MAX_NAME, tidyKinds, tidyLook, type Disc, type Look, type ParticleKind } from './particles'
+
+/** Particles scattered at random in the box, or packed in a lattice. */
+export const LAYOUTS = ['scattered', 'lattice'] as const
+export type Layout = (typeof LAYOUTS)[number]
 
 export const BORDERS = ['single', 'double', 'none'] as const
 export type Border = (typeof BORDERS)[number]
 
-/** The box is always this square, whatever is in it, so answer choices made
- *  one at a time line up (see CONTEXT.md "Box"). */
+/** The box is always this square around scattered particles, whatever is in
+ *  it, so answer choices made one at a time line up (see CONTEXT.md "Box"). */
 export const BOX_SIDE = 300
 
 /** How far a double border's inner line sits inside the outer one. */
 export const DOUBLE_INSET = 6
 
+/** Space between a lattice and the border around it. */
+export const LATTICE_MARGIN = 10
+
 export const MAX_SEED = 999999
+export const MAX_LATTICE = 12
 
 /** What the figure shows: the box, the box and its key, or just the key
  *  (so answer choices made one at a time can share one key). */
@@ -28,17 +37,37 @@ const DEFAULT_KINDS: ParticleKind[] = [
   { count: 4, shape: 'single', look: { size: 's', shade: 'white', charge: '+' }, outer: { ...DEFAULT_OUTER } },
 ]
 
+const look = (fallback: Look) => json(fallback, (v) => (v && typeof v === 'object' && !Array.isArray(v) ? tidyLook(v) : undefined))
+
 export const particleSettings = defineSettings(
   {
+    layout: choice(LAYOUTS, 'scattered'),
     particles: json(DEFAULT_KINDS, tidyKinds),
     seed: number({ min: 1, max: MAX_SEED, fallback: 2 }),
     border: choice(BORDERS, 'single'),
+    pattern: choice(LATTICE_PATTERNS, 'alternate'),
+    rows: number({ min: 1, max: MAX_LATTICE, fallback: 4 }),
+    columns: number({ min: 1, max: MAX_LATTICE, fallback: 5 }),
+    spacing: choice(LATTICE_SPACINGS, 'touching'),
+    main: look({ size: 'l', shade: 'light', charge: '-' }),
+    second: look({ size: 's', shade: 'white', charge: '+' }),
+    secondCount: number({ min: 0, max: MAX_LATTICE * MAX_LATTICE, fallback: 4 }),
+    mainName: text('', MAX_NAME),
+    secondName: text('', MAX_NAME),
+    // lattices are usually drawn without a box, so theirs starts off
+    latticeBorder: choice(BORDERS, 'none'),
     show: choice(SHOWS, 'box'),
     keyNote: text('', MAX_NOTE),
     titleMode: choice(['none', 'text'] as const, 'none'),
     title: text(''),
   },
-  (s) => ({ ...s, seed: Math.round(s.seed) }),
+  (s) => ({
+    ...s,
+    seed: Math.round(s.seed),
+    rows: Math.round(s.rows),
+    columns: Math.round(s.columns),
+    secondCount: Math.round(s.secondCount),
+  }),
 )
 
 export type ParticleSettings = typeof particleSettings.defaults
@@ -52,4 +81,45 @@ export function boxParticles(s: ParticleSettings) {
   const inset = s.border === 'double' ? DOUBLE_INSET : 0
   const { discs, missing } = scatter(s.particles, BOX_SIDE - 2 * inset, BOX_SIDE - 2 * inset, s.seed)
   return { discs: discs.map((d) => ({ ...d, x: d.x + inset, y: d.y + inset })), missing }
+}
+
+/** A lattice's one or two atoms or ions as particle kinds, for its key. */
+function latticeKinds(s: ParticleSettings): ParticleKind[] {
+  const kind = (look: Look, name: string): ParticleKind => ({
+    count: 1,
+    shape: 'single',
+    look,
+    outer: { ...DEFAULT_OUTER },
+    ...(name.trim() ? { name } : {}),
+  })
+  const main = kind(s.main, s.mainName)
+  return s.pattern === 'pure' ? [main] : [main, kind(s.second, s.secondName)]
+}
+
+export interface BoxContents {
+  width: number
+  height: number
+  border: Border
+  discs: Disc[]
+  /** particles, or a lattice's second atoms, that had no room */
+  missing: number
+  /** what the key lists */
+  kinds: ParticleKind[]
+}
+
+/** Everything in the box for these settings: the fixed square of scattered
+ *  particles, or a lattice with a box just fitting it. */
+export function boxContents(s: ParticleSettings): BoxContents {
+  if (s.layout === 'scattered') return { width: BOX_SIDE, height: BOX_SIDE, border: s.border, ...boxParticles(s), kinds: s.particles }
+  const grid = lattice(s)
+  const border = s.latticeBorder
+  const pad = border === 'none' ? 0 : LATTICE_MARGIN + (border === 'double' ? DOUBLE_INSET : 0)
+  return {
+    width: grid.width + 2 * pad,
+    height: grid.height + 2 * pad,
+    border,
+    discs: grid.discs.map((d) => ({ ...d, x: d.x + pad, y: d.y + pad })),
+    missing: grid.missing,
+    kinds: latticeKinds(s),
+  }
 }
