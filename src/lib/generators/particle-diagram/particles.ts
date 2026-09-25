@@ -1,7 +1,8 @@
 // What a particle diagram is drawn from: a short list of particle kinds, each
-// a count and a look (a size, a shade and, for an ion, a charge), and the
-// tidying that turns anything stored or linked into valid ones. See
-// CONTEXT.md for atom, ion and particle.
+// a count, a shape and a look (a size, a shade and, for an ion, a charge) for
+// the center or lone disc and another for the outer ones, and the tidying
+// that turns anything stored or linked into valid ones. See CONTEXT.md for
+// atom, ion, molecule, ion cluster and particle.
 
 export const SIZES = ['xs', 's', 'm', 'l', 'xl'] as const
 export type Size = (typeof SIZES)[number]
@@ -43,21 +44,72 @@ export interface Look {
   charge: Charge
 }
 
+/** How a particle's discs are joined: alone (an atom or ion), or a center
+ *  with one to four outer discs touching it. */
+export const SHAPES = ['single', 'pair', 'bent', 'line', 'triangle', 'cross'] as const
+export type Shape = (typeof SHAPES)[number]
+
+export const SHAPE_NAMES: Record<Shape, string> = {
+  single: 'Alone',
+  pair: 'Pair',
+  bent: 'Bent',
+  line: 'In a line',
+  triangle: 'Three around',
+  cross: 'Four around',
+}
+/** Words for telling apart shapes with the same number of outer discs. */
+const SHAPE_WORDS: Record<Shape, string> = { single: '', pair: '', bent: 'bent', line: 'linear', triangle: '', cross: '' }
+
+/** Which way each outer disc points from the center, in degrees clockwise
+ *  from the right (the figure's y runs down). Bent opens downward, as H₂O is
+ *  usually drawn, with the 104.5° angle of water. */
+const DIRECTIONS: Record<Shape, number[]> = {
+  single: [],
+  pair: [0],
+  bent: [90 - 52.25, 90 + 52.25],
+  line: [0, 180],
+  triangle: [-90, 30, 150],
+  cross: [0, 90, 180, 270],
+}
+
 export interface ParticleKind {
   /** how many are drawn in the box */
   count: number
+  shape: Shape
+  /** the center disc, or the only one when the shape is alone */
   look: Look
+  /** every outer disc; not drawn when the shape is alone */
+  outer: Look
 }
 
 export const MAX_KINDS = 4
 export const MAX_COUNT = 60
 
-/** "Ion" or "Atom", from whether the kind carries a charge. */
-export const kindName = (kind: ParticleKind) => (kind.look.charge ? 'Ion' : 'Atom')
+const isJoined = (kind: ParticleKind) => kind.shape !== 'single'
+
+/** "Atom" or "Ion" for a lone kind, "Molecule" or "Ion cluster" for a joined
+ *  one, from whether any of its drawn discs carry a charge. */
+export function kindName(kind: ParticleKind) {
+  if (!isJoined(kind)) return kind.look.charge ? 'Ion' : 'Atom'
+  return kind.look.charge || kind.outer.charge ? 'Ion cluster' : 'Molecule'
+}
 
 /** e.g. "large light gray −" */
 export const describeLook = (look: Look) =>
   [SIZE_WORDS[look.size], SHADE_NAMES[look.shade].toLowerCase(), chargeText(look.charge)].filter(Boolean).join(' ')
+
+/** e.g. "4 large light gray − ions" or "3 bent molecules (medium gray with
+ *  2 small white)" */
+export function describeKind(kind: ParticleKind) {
+  const noun = kindName(kind).toLowerCase() + (kind.count === 1 ? '' : 's')
+  if (!isJoined(kind)) return `${kind.count} ${describeLook(kind.look)} ${noun}`
+  const outers = DIRECTIONS[kind.shape].length
+  const around = outers === 1 ? `and ${describeLook(kind.outer)}` : `with ${outers} ${describeLook(kind.outer)}`
+  return [kind.count, SHAPE_WORDS[kind.shape], noun].filter(Boolean).join(' ') + ` (${describeLook(kind.look)} ${around})`
+}
+
+/** The outer discs' look a new or old kind starts with. */
+export const DEFAULT_OUTER: Look = { size: 's', shade: 'white', charge: '' }
 
 // Tidying ------------------------------------------------------------------
 
@@ -73,7 +125,13 @@ export function tidyLook(v: unknown): Look {
 export function tidyKind(v: unknown): ParticleKind | undefined {
   if (!isObject(v)) return undefined
   const count = typeof v.count === 'number' && Number.isFinite(v.count) ? Math.round(v.count) : 1
-  return { count: Math.min(MAX_COUNT, Math.max(0, count)), look: tidyLook(v.look) }
+  return {
+    count: Math.min(MAX_COUNT, Math.max(0, count)),
+    // kinds from before molecules had no shape or outer look: they stay alone
+    shape: oneOf(SHAPES, v.shape, 'single'),
+    look: tidyLook(v.look),
+    outer: isObject(v.outer) ? tidyLook(v.outer) : { ...DEFAULT_OUTER },
+  }
 }
 
 /** Up to four valid kinds, or undefined when there are none at all. */
@@ -92,8 +150,32 @@ export interface Disc extends Look {
   r: number
 }
 
-/** A particle's discs around (0, 0), turned by `angle` radians. */
+/** How far the outer discs sit from the center: touching it with a slight
+ *  overlap, as in printed diagrams, or further out when big outer discs
+ *  around a small center would otherwise pile onto each other. */
+function outerDistance(kind: ParticleKind) {
+  const rc = RADIUS[kind.look.size]
+  const ro = RADIUS[kind.outer.size]
+  const touching = rc + ro - 0.2 * Math.min(rc, ro)
+  const directions = DIRECTIONS[kind.shape]
+  if (directions.length < 2) return touching
+  // the closest two outer discs overlap each other by no more than they would the center
+  const sorted = [...directions].sort((a, b) => a - b)
+  const gaps = sorted.map((a, i) => (i ? a - sorted[i - 1] : a + 360 - sorted[sorted.length - 1]))
+  const tightest = (Math.min(...gaps) * Math.PI) / 180
+  return Math.max(touching, (0.9 * ro) / Math.sin(tightest / 2))
+}
+
+/** A particle's discs around (0, 0), turned by `angle` radians: the outer
+ *  discs first and the center last, so it's drawn on top. Only positions
+ *  turn; charges are drawn upright wherever their disc ends up. */
 export function particleDiscs(kind: ParticleKind, angle = 0): Disc[] {
-  void angle // a lone atom or ion looks the same whichever way it's turned
-  return [{ ...kind.look, x: 0, y: 0, r: RADIUS[kind.look.size] }]
+  const center: Disc = { ...kind.look, x: 0, y: 0, r: RADIUS[kind.look.size] }
+  if (!isJoined(kind)) return [center]
+  const distance = outerDistance(kind)
+  const outer = DIRECTIONS[kind.shape].map((degrees): Disc => {
+    const a = (degrees * Math.PI) / 180 + angle
+    return { ...kind.outer, x: distance * Math.cos(a), y: distance * Math.sin(a), r: RADIUS[kind.outer.size] }
+  })
+  return [...outer, center]
 }
