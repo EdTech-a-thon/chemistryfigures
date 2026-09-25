@@ -9,10 +9,10 @@
   import ReadingField from '$lib/shared/ReadingField.svelte'
   import Section from '$lib/shared/Section.svelte'
   import { generatorState } from '$lib/shared/generatorState.svelte'
-  import { LIQUID_TINTS, type LiquidTint } from '../volume-reading/liquid'
+  import { LIQUID_TINTS, LIQUID_TINT_NAMES } from '../volume-reading/liquid'
   import { CYLINDER_SIZES, formatReading, type CylinderSize } from '../volume-reading/scale'
   import DisplacementFigure from './DisplacementFigure.svelte'
-  import { MARBLE_COUNTS, OBJECTS, type ObjectKind } from './objects'
+  import { MARBLE_COUNTS, OBJECTS, OBJECT_NAMES, objectName } from './objects'
   import { displacedVolume, fixReadings, randomReadings } from './readings'
   import { DISPLACEMENT_VIEWS, DISPLACEMENT_VIEW_NAMES, answerLine, cylinderScale, displacementSettings, objectInCylinder } from './settings'
 
@@ -20,11 +20,9 @@
   const s = gen.s
   let svg = $state<SVGSVGElement>()
 
-  const TINT_NAMES: Record<LiquidTint, string> = { gray: 'Gray', blue: 'Blue', red: 'Red', green: 'Green' }
-  const OBJECT_NAMES: Record<ObjectKind, string> = { marbles: 'Marbles', rock: 'Rock', cube: 'Cube' }
   const scale = $derived(cylinderScale(s.size))
   const shrunk = $derived(objectInCylinder(s).shrunk)
-  const objectSummary = $derived(s.object === 'marbles' ? `${s.marbles} marble${s.marbles === 1 ? '' : 's'}` : OBJECT_NAMES[s.object])
+  const objectSummary = $derived(objectName(s.object, s.marbles).replace(/^a /, 'A '))
   const mL = (v: number) => `${formatReading(scale, v)} mL`
 
   const readingSummary = $derived(`${mL(s.before)} → ${mL(s.after)}, object ${mL(displacedVolume(scale, s))}`)
@@ -57,7 +55,7 @@
       <div class="chips" role="radiogroup" aria-label="Liquid color">
         {#each LIQUID_TINTS as tint (tint)}
           <button type="button" role="radio" aria-checked={s.tint === tint} class="chip" class:on={s.tint === tint} onclick={() => (s.tint = tint)}>
-            {TINT_NAMES[tint]}
+            {LIQUID_TINT_NAMES[tint]}
           </button>
         {/each}
       </div>
@@ -83,7 +81,7 @@
           onchange={(v) => setReadings(s.before, v)}
         />
       </div>
-      <p class="note">The after reading is always higher; the object’s volume is the difference, {mL(displacedVolume(scale, s))}.</p>
+      <p class="note">The after reading is always higher; the displaced volume, {mL(displacedVolume(scale, s))}, is the object’s volume.</p>
       <button type="button" class="btn-ghost random" onclick={() => Object.assign(s, randomReadings(scale))}>
         <Dices size={17} aria-hidden="true" /> Random readings
       </button>

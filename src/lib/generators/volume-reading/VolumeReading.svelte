@@ -10,7 +10,7 @@
   import { generatorState } from '$lib/shared/generatorState.svelte'
   import { MAGNIFIER_VIEW_NAMES } from '$lib/shared/magnify'
   import VolumeFigure from './VolumeFigure.svelte'
-  import { LIQUID_TINTS, type LiquidTint } from './liquid'
+  import { LIQUID_TINTS, LIQUID_TINT_NAMES } from './liquid'
   import { CYLINDER_SIZES, INSTRUMENTS, formatReading, randomReading, roundReading, volumeScale, type CylinderSize, type Instrument } from './scale'
   import { answerLine, volumeSettings } from './settings'
 
@@ -19,7 +19,6 @@
   let svg = $state<SVGSVGElement>()
 
   const INSTRUMENT_NAMES: Record<Instrument, string> = { cylinder: 'Graduated cylinder', buret: 'Buret' }
-  const TINT_NAMES: Record<LiquidTint, string> = { gray: 'Gray', blue: 'Blue', red: 'Red', green: 'Green' }
   const scale = $derived(volumeScale(s.instrument, s.size))
   const instrumentName = $derived(s.instrument === 'buret' ? '50 mL buret' : `${s.size} mL graduated cylinder`)
 
@@ -68,7 +67,7 @@
       <div class="chips" role="radiogroup" aria-label="Liquid color">
         {#each LIQUID_TINTS as tint (tint)}
           <button type="button" role="radio" aria-checked={s.tint === tint} class="chip" class:on={s.tint === tint} onclick={() => (s.tint = tint)}>
-            {TINT_NAMES[tint]}
+            {LIQUID_TINT_NAMES[tint]}
           </button>
         {/each}
       </div>

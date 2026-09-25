@@ -7,7 +7,13 @@
 export const OBJECTS = ['marbles', 'rock', 'cube'] as const
 export type ObjectKind = (typeof OBJECTS)[number]
 
+export const OBJECT_NAMES: Record<ObjectKind, string> = { marbles: 'Marbles', rock: 'Rock', cube: 'Cube' }
+
 export const MARBLE_COUNTS = [1, 2, 3, 4, 5] as const
+
+/** The object in a sentence: "a marble", "3 marbles", "a rock". */
+export const objectName = (kind: ObjectKind, marbles: number) =>
+  kind === 'marbles' ? (marbles === 1 ? 'a marble' : `${marbles} marbles`) : `a ${kind}`
 
 /** The space the object may fill, in drawing units: the inside of the tube
  *  from the bottom up to just under the water's surface. */

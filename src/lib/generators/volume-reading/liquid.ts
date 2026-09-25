@@ -4,6 +4,8 @@
 export const LIQUID_TINTS = ['gray', 'blue', 'red', 'green'] as const
 export type LiquidTint = (typeof LIQUID_TINTS)[number]
 
+export const LIQUID_TINT_NAMES: Record<LiquidTint, string> = { gray: 'Gray', blue: 'Blue', red: 'Red', green: 'Green' }
+
 /** Gray prints well on a photocopier; the colors are for slides. */
 export const LIQUID_COLORS: Record<LiquidTint, { fill: string; surface: string }> = {
   gray: { fill: '#dcdcdc', surface: '#444' },
