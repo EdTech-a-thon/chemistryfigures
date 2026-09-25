@@ -30,7 +30,7 @@ export const GENERATORS: Generator[] = [
     id: 'volume-reading',
     name: 'Volume Reading',
     path: '/volume-reading',
-    blurb: 'A graduated cylinder, buret or beaker showing the volume you type.',
+    blurb: 'A graduated cylinder, buret, or beaker showing the volume you type.',
     description:
       'Make printable graduated cylinder, buret and beaker figures for chemistry tests. Type a volume and students read it from the meniscus, with a magnified view for the estimated digit.',
     keywords: ['graduated', 'cylinder', 'buret', 'burette', 'beaker', 'meniscus', 'volume', 'mL', 'milliliters', 'measurement', 'lab', 'glassware'],

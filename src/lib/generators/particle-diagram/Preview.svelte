@@ -1,9 +1,15 @@
 <script lang="ts">
-  // Particle Diagram's figure on its directory card.
+  // Particle Diagram's figures on its directory card: particles scattered in
+  // a box, and an ionic lattice.
+  import SplitPreview from '$lib/shared/SplitPreview.svelte'
   import ParticleFigure from './ParticleFigure.svelte'
   import { boxContents, particleSettings } from './settings'
 
-  const settings = particleSettings.defaults
+  const scattered = particleSettings.defaults
+  const lattice = particleSettings.tidy({ ...scattered, layout: 'lattice' })
 </script>
 
-<ParticleFigure {settings} box={boxContents(settings)} />
+{#snippet scatteredFigure()}<ParticleFigure settings={scattered} box={boxContents(scattered)} />{/snippet}
+{#snippet latticeFigure()}<ParticleFigure settings={lattice} box={boxContents(lattice)} />{/snippet}
+
+<SplitPreview figures={[scatteredFigure, latticeFigure]} />
