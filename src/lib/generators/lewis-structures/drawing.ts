@@ -8,6 +8,10 @@ import { labelDirection, loneDirections } from './layout'
 import { hasBrackets, shownCharge, shownFormalCharge, type Structure } from './structure'
 
 export const BOND = 64
+/** atoms sit closer with dot bonds, so each shared pair sits between them,
+ *  though never so close that a bond's dots touch its atoms' letters */
+const DOT_BOND = 40
+const DOT_CLEAR = 3
 export const FONT = 26
 export const DOT_R = 2.6
 export const LABEL_FONT = 15
@@ -53,9 +57,15 @@ export interface Drawing {
   charge?: { x: number; y: number; text: string }
 }
 
+/** How a bond's shared pairs are drawn: a line each, or two dots each
+ *  (see CONTEXT.md "Bond style"). */
+export const BOND_STYLES = ['lines', 'dots'] as const
+export type BondStyle = (typeof BOND_STYLES)[number]
+
 export interface DrawOptions {
-  /** draw the bond lines; off for a skeleton */
+  /** draw the bonds; off for a skeleton */
   bonds?: boolean
+  bondStyle?: BondStyle
   /** draw the lone electrons; off for a skeleton or bonds only */
   electrons?: boolean
   formalCharges?: boolean
@@ -63,11 +73,31 @@ export interface DrawOptions {
 
 const BOND_GAP = 4
 const MULTIPLE = [[], [0], [-3.5, 3.5], [-6.5, 0, 6.5]]
+/** where each shared pair of dots sits along a bond, out from its middle */
+const DOT_PAIRS = [[], [0], [-4.5, 4.5], [-8, 0, 8]]
 const DOT_OUT = 5.5
 const PAIR = 4.3
 
-export function drawStructure(s: Structure, { bonds = true, electrons = true, formalCharges = false }: DrawOptions = {}): Drawing {
-  const at = s.atoms.map((a) => ({ x: a.x * BOND, y: a.y * BOND }))
+/** How far apart atoms sit with dot bonds: DOT_BOND, or further when a
+ *  bond's dots need more room between its atoms' letters. */
+function dotSpacing(s: Structure) {
+  let spacing = DOT_BOND
+  for (const b of s.bonds) {
+    const p = s.atoms[b.a]
+    const q = s.atoms[b.b]
+    const length = Math.hypot(q.x - p.x, q.y - p.y)
+    const pairs = DOT_PAIRS[Math.min(3, Math.max(0, b.order))]
+    if (!length || !pairs.length) continue
+    const angle = (Math.atan2(q.y - p.y, q.x - p.x) * 180) / Math.PI
+    const dots = 2 * Math.max(...pairs.map(Math.abs)) + 2 * DOT_R
+    spacing = Math.max(spacing, (reach(p.element, angle) + reach(q.element, angle + 180) + dots + 2 * DOT_CLEAR) / length)
+  }
+  return spacing
+}
+
+export function drawStructure(s: Structure, { bonds = true, bondStyle = 'lines', electrons = true, formalCharges = false }: DrawOptions = {}): Drawing {
+  const spacing = bonds && bondStyle === 'dots' ? dotSpacing(s) : BOND
+  const at = s.atoms.map((a) => ({ x: a.x * spacing, y: a.y * spacing }))
   const lines: Drawing['lines'] = []
   const bondSpots: Drawing['bondSpots'] = []
   const dots: Drawing['dots'] = []
@@ -82,9 +112,19 @@ export function drawStructure(s: Structure, { bonds = true, electrons = true, fo
     const from = reach(s.atoms[b.a].element, angle) + BOND_GAP
     const to = reach(s.atoms[b.b].element, angle + 180) + BOND_GAP
     const length = Math.hypot(q.x - p.x, q.y - p.y)
-    bondSpots.push({ x: (p.x + q.x) / 2 + (u.x * (from - to)) / 2, y: (p.y + q.y) / 2 + (u.y * (from - to)) / 2, angle, length: Math.max(0, length - from - to), bond: k })
+    const mid = { x: (p.x + q.x) / 2 + (u.x * (from - to)) / 2, y: (p.y + q.y) / 2 + (u.y * (from - to)) / 2 }
+    bondSpots.push({ ...mid, angle, length: Math.max(0, length - from - to), bond: k })
     if (!bonds) return
-    for (const offset of MULTIPLE[Math.min(3, Math.max(0, b.order))]) {
+    const order = Math.min(3, Math.max(0, b.order))
+    if (bondStyle === 'dots') {
+      // Each pair across the bond, like a lone pair, and the pairs side by side along it.
+      for (const along of DOT_PAIRS[order]) {
+        const c = { x: mid.x + u.x * along, y: mid.y + u.y * along }
+        dots.push({ x: c.x - u.y * PAIR, y: c.y + u.x * PAIR }, { x: c.x + u.y * PAIR, y: c.y - u.x * PAIR })
+      }
+      return
+    }
+    for (const offset of MULTIPLE[order]) {
       const nx = -u.y * offset
       const ny = u.x * offset
       lines.push({ x1: p.x + u.x * from + nx, y1: p.y + u.y * from + ny, x2: q.x - u.x * to + nx, y2: q.y - u.y * to + ny, bond: k })

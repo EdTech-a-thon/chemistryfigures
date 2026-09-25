@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { correctStructures, findCentral, starSkeleton } from './build'
-import { drawStructure, type Drawing } from './drawing'
+import { DOT_R, drawStructure, type Drawing } from './drawing'
 import { parseFormula } from './formula'
 import { placeStar } from './layout'
 import type { Structure } from './structure'
@@ -27,6 +27,22 @@ describe('drawing a structure', () => {
     expect(co2.lines).toHaveLength(4)
     expect(co2.symbols.map((t) => t.text)).toEqual(['C', 'O', 'O'])
     expect(finite(co2) && inside(co2)).toBe(true)
+  })
+
+  it('draws each shared pair as two dots between the atoms when bonds are dots', () => {
+    const co2 = drawStructure(placed('CO2'), { bondStyle: 'dots' })
+    expect(co2.lines).toEqual([])
+    expect(co2.dots).toHaveLength(8 + 8)
+    expect(finite(co2) && inside(co2)).toBe(true)
+    expect(drawStructure(placed('N2'), { bondStyle: 'dots' }).dots).toHaveLength(4 + 6)
+  })
+
+  it('keeps bond dots clear of the letters, even for a triple bond', () => {
+    for (const f of ['N2', 'CO2', 'HCN', 'CH4']) {
+      const d = drawStructure(placed(f), { bondStyle: 'dots' })
+      const clear = d.dots.every((p) => d.symbols.every((t) => Math.abs(p.x - t.x) > t.w / 2 + DOT_R || Math.abs(p.y - t.y) > t.h / 2 + DOT_R))
+      expect(clear, f).toBe(true)
+    }
   })
 
   it('draws an ion in brackets with its charge', () => {

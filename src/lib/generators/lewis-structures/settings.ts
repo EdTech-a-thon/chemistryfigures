@@ -4,6 +4,7 @@
 import { figureTextFields } from '$lib/shared/figureText'
 import { bool, choice, defineSettings, number, text } from '$lib/shared/settings'
 import { RULES } from './build'
+import { BOND_STYLES } from './drawing'
 import { applyChanges, changesField, type Change } from './changes'
 import { findMistakes } from './check'
 import { SHAPES } from './layout'
@@ -12,7 +13,7 @@ import type { Structure } from './structure'
 
 /** How much of the structure a "complete this" question gives the student
  *  (see CONTEXT.md "Scaffold"). */
-export const SCAFFOLDS = ['full', 'bonds', 'skeleton', 'formula'] as const
+export const SCAFFOLDS = ['full', 'bonds', 'skeleton'] as const
 export type Scaffold = (typeof SCAFFOLDS)[number]
 
 /** One resonance structure, or all of them joined by ↔. */
@@ -30,6 +31,7 @@ export const lewisSettings = defineSettings(
     resonance: choice(RESONANCES, 'one'),
     form: number({ min: 1, max: MAX_FORMS, fallback: 1 }),
     shape: choice(SHAPES, 'flat'),
+    bondStyle: choice(BOND_STYLES, 'lines'),
     formalCharges: bool(false),
     scaffold: choice(SCAFFOLDS, 'full'),
     central: text('', 2),

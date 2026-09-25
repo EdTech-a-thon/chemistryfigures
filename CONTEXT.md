@@ -182,8 +182,12 @@ A structure with more than one central atom, such as ethanol, HNO₃ or N₂H₄
 _Avoid_: Preset (that's the teacher's saved settings), template, library molecule
 
 **Bond**:
-One, two or three lines between two atoms for a single, double or triple bond, each line one shared pair of electrons.
+One, two or three shared pairs of electrons between two atoms for a single, double or triple bond, each pair drawn as a line or as two dots (see **Bond style**).
 _Avoid_: Line, stick, bonding pair (fine in help text)
+
+**Bond style**:
+How a structure's bonds are drawn: lines (the default), one line per shared pair, or dots, two dots per shared pair set between the atoms as in H:H. Lone electrons are dots either way.
+_Avoid_: Dot diagram, stick diagram, electron dot structure (fine in help text)
 
 **Lone electrons**:
 An atom's electrons that aren't in a bond, counted one at a time and drawn two to a side, with an odd one drawn alone (as in NO or NO₂).
@@ -202,7 +206,7 @@ How a structure's atoms are placed: flat, with outer atoms and lone electrons on
 _Avoid_: Geometry, VSEPR shape (that's what shaped hints at, not what it draws), layout (that's a particle diagram's)
 
 **Scaffold**:
-How much of the structure a "complete this" question gives the student: the formula only, the skeleton (atoms placed, no bonds or lone electrons), the bonds without lone electrons, or the full structure. With anything less than the full structure, the answer key draws the full structure. A scaffolded structure can't also be changed: a figure is either a "complete this" question or a "find the mistake" question.
+How much of the structure a "complete this" question gives the student: the skeleton (atoms placed, no bonds or lone electrons), the bonds without lone electrons, or the full structure. With anything less than the full structure, the answer key draws the full structure. A scaffolded structure can't also be changed: a figure is either a "complete this" question or a "find the mistake" question.
 _Avoid_: Hint level, given, blank
 
 **Structure rule**:

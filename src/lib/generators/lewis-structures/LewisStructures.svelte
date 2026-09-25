@@ -7,12 +7,14 @@
   import GeneratorPage from '$lib/shared/GeneratorPage.svelte'
   import HelpTip from '$lib/shared/HelpTip.svelte'
   import LabelField from '$lib/shared/LabelField.svelte'
+  import Modal from '$lib/shared/Modal.svelte'
   import Section from '$lib/shared/Section.svelte'
   import { generatorState } from '$lib/shared/generatorState.svelte'
   import { openRequest } from '$lib/site/request.svelte'
   import LewisFigure from './LewisFigure.svelte'
   import { RULES, type Rule } from './build'
   import { MAX_LONE, setChange, type Change } from './changes'
+  import { BOND_STYLES, type BondStyle } from './drawing'
   import type { Selection } from './figureLayout'
   import { chargeText, formulaText, parseFormula, signed } from './formula'
   import { SHAPES, type Shape } from './layout'
@@ -32,13 +34,13 @@
     flat: 'Atoms and lone pairs on the four sides of each symbol, as most textbooks draw them.',
     shaped: 'Placed to hint at the real shape, like bent H₂O. Still a flat drawing.',
   }
+  const BOND_STYLE_NAMES: Record<BondStyle, string> = { lines: 'Lines', dots: 'Dots' }
   const RULE_NAMES: Record<Rule, string> = { octet: 'Octet rule', fewest: 'Fewest formal charges' }
-  const SCAFFOLD_NAMES: Record<Scaffold, string> = { full: 'Full structure', bonds: 'Bonds only', skeleton: 'Skeleton', formula: 'Formula only' }
+  const SCAFFOLD_NAMES: Record<Scaffold, string> = { full: 'Full structure', bonds: 'Bonds only', skeleton: 'Skeleton' }
   const SCAFFOLD_NOTES: Record<Scaffold, string> = {
     full: 'The whole structure, bonds and lone electrons.',
     bonds: 'The atoms and bonds, for students to add the lone electrons.',
     skeleton: 'The atoms in place, for students to add bonds and lone electrons.',
-    formula: 'Just the formula, for students to draw the whole structure.',
   }
   const ORDER_NAMES = ['None', 'Single', 'Double', 'Triple']
 
@@ -65,47 +67,63 @@
 
   const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`
 
-  /** Clears the changes and selection before something that starts from
-   *  another structure, asking first if there are changes. False when the
-   *  teacher would rather keep them. */
-  function clearChanges() {
-    if (changeCount && !confirm(`This clears your ${plural(changeCount, 'change')} to the structure. Go ahead?`)) return false
-    s.changes = []
-    s.central = ''
-    selected = null
-    return true
+  /** The question asked before clearing the changes, with what to do once
+   *  they're cleared; null while no one is being asked. */
+  let clearing = $state<{ message: string; then: () => void } | null>(null)
+
+  /** Clears the changes and selection, then does `then`: something that
+   *  starts from another structure. With changes, it asks first in a dialog,
+   *  and nothing happens if the teacher would rather keep them. */
+  function clearThen(then: () => void) {
+    if (!changeCount) {
+      reset()
+      then()
+    } else clearing = { message: `This clears your ${plural(changeCount, 'change')} to the structure.`, then }
+  }
+
+  function confirmClear() {
+    const then = clearing!.then
+    clearing = null
+    reset()
+    then()
   }
 
   function setFormula(e: Event & { currentTarget: HTMLInputElement }) {
-    if (!clearChanges()) {
-      e.currentTarget.value = s.formula
-      return
-    }
-    s.formula = e.currentTarget.value
-    s.which = ''
-    s.form = 1
-    selected = null
+    const formula = e.currentTarget.value
+    // Put back until the teacher agrees to clear the changes.
+    if (changeCount) e.currentTarget.value = s.formula
+    clearThen(() => {
+      s.formula = formula
+      s.which = ''
+      s.form = 1
+    })
   }
+
+  /** The listed structure drawn now, shown picked in the list. */
+  const listedId = $derived(found?.listed?.id ?? '')
 
   function pickListed(e: Event & { currentTarget: HTMLSelectElement }) {
     const l = LISTED.find((x) => x.id === e.currentTarget.value)
-    e.currentTarget.value = ''
-    if (!l || !clearChanges()) return
-    s.formula = l.formula
-    s.which = l.id
-    s.form = 1
+    e.currentTarget.value = listedId
+    if (!l) return
+    clearThen(() => {
+      s.formula = l.formula
+      s.which = l.id
+      s.form = 1
+    })
   }
 
   /** Another central atom rebuilds the skeleton, so the other changes go. */
   function setCentral(e: Event & { currentTarget: HTMLSelectElement }) {
+    const central = e.currentTarget.value === autoCentral ? '' : e.currentTarget.value
     const n = s.changes.length
-    if (n && !confirm(`This clears your other ${plural(n, 'change')} to the structure. Go ahead?`)) {
-      e.currentTarget.value = s.central || autoCentral
+    if (!n) {
+      reset()
+      s.central = central
       return
     }
-    s.changes = []
-    s.central = e.currentTarget.value === autoCentral ? '' : e.currentTarget.value
-    selected = null
+    e.currentTarget.value = s.central || autoCentral
+    clearing = { message: `This clears your other ${plural(n, 'change')} to the structure.`, then: () => (s.central = central) }
   }
 
   function change(c: Change) {
@@ -136,7 +154,7 @@
 
   const structureSummary = $derived(found ? (found.listed ? `${found.name}, ${found.listed.names[0]}` : found.name) : 'No structure')
   const lookSummary = $derived(
-    [SHAPE_NAMES[s.shape], s.formalCharges ? 'formal charges' : '', found?.ruleMatters ? RULE_NAMES[s.rule].toLowerCase() : '', forms > 1 && drawn.resonance === 'all' ? 'all resonance structures' : '']
+    [SHAPE_NAMES[s.shape], s.bondStyle === 'dots' ? 'bonds as dots' : '', s.formalCharges ? 'formal charges' : '', found?.ruleMatters ? RULE_NAMES[s.rule].toLowerCase() : '', forms > 1 && drawn.resonance === 'all' ? 'all resonance structures' : '']
       .filter(Boolean)
       .join(', '),
   )
@@ -189,7 +207,7 @@
               aria-checked={r.listed?.id === l.id}
               class="chip small"
               class:on={r.listed?.id === l.id}
-              onclick={() => r.listed?.id !== l.id && clearChanges() && ((s.which = l.id), (s.form = 1))}
+              onclick={() => r.listed?.id !== l.id && clearThen(() => ((s.which = l.id), (s.form = 1)))}
             >
               {listedLabel(l.id)}
             </button>
@@ -202,7 +220,7 @@
       {/if}
       <label class="field">
         <span class="field-head">Or pick from the list</span>
-        <select onchange={pickListed} value="">
+        <select onchange={pickListed} value={listedId}>
           <option value="">Molecules with more than one central atom…</option>
           {#each LISTED as l (l.id)}
             <option value={l.id}>{listedLabel(l.id)}</option>
@@ -215,6 +233,9 @@
       <p class="field-label">Shape</p>
       {@render segmented('Shape', SHAPES, s.shape, SHAPE_NAMES, (v) => (s.shape = v))}
       <p class="note">{SHAPE_NOTES[s.shape]}</p>
+      <p class="field-label spaced">Bonds</p>
+      {@render segmented('Bonds', BOND_STYLES, s.bondStyle, BOND_STYLE_NAMES, (v) => (s.bondStyle = v))}
+      <p class="note">{s.bondStyle === 'dots' ? 'Each shared pair as two dots between the atoms.' : 'Each shared pair as a line between the atoms.'}</p>
       <label class="check">
         <input type="checkbox" bind:checked={s.formalCharges} />
         <span><strong>Formal charges</strong><small>Label each atom whose formal charge isn’t 0.</small></span>
@@ -227,12 +248,12 @@
             charges lets atoms in period 3 and lower have more than eight, making double bonds until the formal charges are as small as they can be.
           </HelpTip>
         </p>
-        {@render segmented('Structure rule', RULES, s.rule, RULE_NAMES, (v) => v !== s.rule && clearChanges() && ((s.rule = v), (s.form = 1)))}
+        {@render segmented('Structure rule', RULES, s.rule, RULE_NAMES, (v) => v !== s.rule && clearThen(() => ((s.rule = v), (s.form = 1))))}
       {/if}
       {#if forms > 1}
         <p class="field-label spaced">Resonance structures</p>
         {@render segmented('Resonance structures', ['one', 'all'] as const, drawn.resonance, { one: 'Show one', all: `Show all ${forms}` }, (v) => {
-          if (v !== drawn.resonance && clearChanges()) s.resonance = v
+          if (v !== drawn.resonance) clearThen(() => (s.resonance = v))
         })}
         {#if drawn.resonance === 'one'}
           <div class="chips forms" role="radiogroup" aria-label="Which resonance structure">
@@ -244,7 +265,7 @@
                 aria-label="Resonance structure {n}"
                 class="chip small"
                 class:on={Math.min(s.form, forms) === n}
-                onclick={() => n !== s.form && clearChanges() && (s.form = n)}
+                onclick={() => n !== s.form && clearThen(() => (s.form = n))}
               >
                 {n}
               </button>
@@ -285,21 +306,7 @@
         {:else if !canChange}
           <p class="note">Changes need one structure. Show one resonance structure to change it.</p>
         {:else}
-          {#if result.changed}
-            <div class="status">
-              <span>{plural(changeCount, 'change')} from the correct structure</span>
-              <button type="button" class="btn-ghost small" onclick={reset}><RotateCcw size={16} aria-hidden="true" /> Reset to correct</button>
-            </div>
-            {#if result.mistakes.length}
-              <ul class="mistakes" aria-label="Mistakes">
-                {#each result.mistakes as m, i (i)}<li>{m}</li>{/each}
-              </ul>
-            {:else}
-              <p class="note good" role="status">The structure is still correct.</p>
-            {/if}
-          {:else}
-            <p class="note">Make a wrong structure for a “find the mistake” question. Click an atom or bond in the figure, or change one below.</p>
-          {/if}
+          <p class="note">Make a wrong structure for a “find the mistake” question. Click an atom or bond in the figure, or change one below.</p>
 
           {#if centrals.length}
             <label class="inline">
@@ -378,6 +385,21 @@
               </label>
             {/if}
           {/if}
+
+          <!-- Under the changes so that the controls stay put as mistakes come and go. -->
+          {#if result.changed}
+            <div class="status" class:after={!!current}>
+              <span>{plural(changeCount, 'change')} from the correct structure</span>
+              <button type="button" class="btn-ghost small" onclick={reset}><RotateCcw size={16} aria-hidden="true" /> Reset to correct</button>
+            </div>
+            {#if result.mistakes.length}
+              <ul class="mistakes" aria-label="Mistakes">
+                {#each result.mistakes as m, i (i)}<li>{m}</li>{/each}
+              </ul>
+            {:else}
+              <p class="note good" role="status">The structure is still correct.</p>
+            {/if}
+          {/if}
         {/if}
       </div>
     </Section>
@@ -405,6 +427,16 @@
   {/snippet}
 </GeneratorPage>
 
+{#if clearing}
+  <Modal title="Clear your changes?" onclose={() => (clearing = null)}>
+    <p>{clearing.message}</p>
+    <div class="actions">
+      <button type="button" class="btn-ghost" data-autofocus onclick={() => (clearing = null)}>Keep changes</button>
+      <button type="button" class="btn-primary" onclick={confirmClear}>Clear changes</button>
+    </div>
+  </Modal>
+{/if}
+
 <style>
   .field { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.35rem; font-size: 0.9rem; font-weight: 700; }
   .field + .field, .note + .field, .chips + .field, .request + .field { margin-top: 1rem; }
@@ -428,6 +460,8 @@
   .check span { display: flex; flex-direction: column; }
   .check strong { display: flex; align-items: center; gap: 0.3rem; font-size: 0.9rem; }
   .check small { color: var(--muted); font-size: 0.82rem; }
+  .actions { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.25rem; }
+  .status.after { margin-top: 1.1rem; padding-top: 0.9rem; border-top: 1.5px solid var(--border); }
   .status { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; font-weight: 700; font-size: 0.9rem; }
   .mistakes { margin: 0.6rem 0 0; padding: 0.55rem 0.75rem 0.55rem 1.6rem; border-radius: 10px; background: var(--red-soft); color: #991b1b; font-size: 0.84rem; }
   .mistakes li + li { margin-top: 0.25rem; }
