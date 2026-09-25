@@ -35,7 +35,7 @@ _Avoid_: Template, favorite
 ### Measurement figures
 
 **Instrument**:
-The piece of lab equipment a figure shows, drawn so students can read a measurement from it. A figure shows exactly one instrument.
+The piece of lab equipment a figure shows, drawn so students can read a measurement from it. A figure shows exactly one instrument; a volume by displacement figure shows the same graduated cylinder twice, before and after the object goes in.
 _Avoid_: Tool, device, apparatus
 
 **Reading**:
@@ -65,8 +65,28 @@ _Avoid_: Scale, beam balance
 The weight slid along one beam of a triple beam balance.
 _Avoid_: Slider, poise, weight
 
+**Volume by displacement**:
+Finding an object's volume from how far it raises the water in a graduated cylinder: the after reading minus the before reading. A figure shows the cylinder before and after, side by side.
+_Avoid_: Water displacement (fine in search keywords, not as the name)
+
+**Object**:
+The solid dropped into the cylinder in a volume by displacement figure: one to five marbles, a rock, or a cube. It rests on the bottom, always fully under water, and is drawn plausibly sized rather than to scale.
+_Avoid_: Sample, solid, item
+
+**Before reading** / **After reading**:
+The two readings in a volume by displacement figure, taken before and after the object goes in. The after reading is always higher.
+_Avoid_: Initial/final volume, start/end
+
+**Displaced volume**:
+The after reading minus the before reading, which is the object's volume.
+_Avoid_: Difference, change
+
+**Caption**:
+The short line under each cylinder in a volume by displacement figure, "Before" and "After" unless the teacher changes them.
+_Avoid_: Label, subtitle
+
 **Magnifier**:
-An enlarged circle showing a small stretch of an instrument's scale around the reading, beside or instead of the whole instrument.
+An enlarged circle showing a small stretch of an instrument's scale around the reading, beside or instead of the whole instrument. In a volume by displacement figure it's optional, with one beside each cylinder, and never replaces the cylinders.
 _Avoid_: Zoom, callout, inset
 
 **Answer key**:
