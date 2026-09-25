@@ -51,6 +51,24 @@ export function text(fallback: string, maxLength = 120): Field<string> {
   return { fallback, accept, parse: accept, format: (v) => v }
 }
 
+/** A structured value (a list of particle kinds, say) written in the
+ *  address as JSON. `tidy` makes a valid value from anything parsed or
+ *  stored, or returns undefined when there's nothing usable in it. */
+export function json<T>(fallback: T, tidy: (v: unknown) => T | undefined): Field<T> {
+  return {
+    fallback,
+    accept: tidy,
+    parse: (text) => {
+      try {
+        return tidy(JSON.parse(text))
+      } catch {
+        return undefined
+      }
+    },
+    format: (v) => JSON.stringify(v),
+  }
+}
+
 type Values<F> = { [K in keyof F]: F[K] extends Field<infer T> ? T : never }
 
 export function defineSettings<F extends Record<string, Field<any>>>(

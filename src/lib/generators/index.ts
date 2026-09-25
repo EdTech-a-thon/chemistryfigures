@@ -4,6 +4,7 @@
 
 import type { Component } from 'svelte'
 import MassReadingPreview from './mass-reading/Preview.svelte'
+import ParticleDiagramPreview from './particle-diagram/Preview.svelte'
 import VolumeReadingPreview from './volume-reading/Preview.svelte'
 
 export interface Generator {
@@ -42,6 +43,16 @@ export const GENERATORS: Generator[] = [
       'Make printable balance figures for chemistry tests. Type a mass and get a digital, analytical or triple beam balance showing it, for students to read.',
     keywords: ['balance', 'scale', 'digital', 'analytical', 'electronic', 'triple', 'beam', 'mass', 'grams', 'weigh', 'weight', 'measurement', 'lab'],
     Preview: MassReadingPreview,
+  },
+  {
+    id: 'particle-diagram',
+    name: 'Particle Diagram',
+    path: '/particle-diagram',
+    blurb: 'Atoms and ions scattered in a box, in the sizes and shades you pick.',
+    description:
+      'Make printable particle diagrams for AP Chemistry tests. Pick the atoms and ions, their sizes, shades and charges, and how many of each, and get a box with them scattered in it.',
+    keywords: ['particulate', 'particles', 'atom', 'atoms', 'ion', 'ions', 'molecule', 'molecules', 'lattice', 'alloy', 'solid', 'liquid', 'gas', 'solution', 'ionic', 'AP', 'diagram', 'model', 'representation'],
+    Preview: ParticleDiagramPreview,
   },
 ]
 
