@@ -5,6 +5,7 @@
 import type { Component } from 'svelte'
 import MassReadingPreview from './mass-reading/Preview.svelte'
 import ParticleDiagramPreview from './particle-diagram/Preview.svelte'
+import PhReadingPreview from './ph-reading/Preview.svelte'
 import TemperatureReadingPreview from './temperature-reading/Preview.svelte'
 import VolumeByDisplacementPreview from './volume-by-displacement/Preview.svelte'
 import VolumeReadingPreview from './volume-reading/Preview.svelte'
@@ -65,6 +66,16 @@ export const GENERATORS: Generator[] = [
       'Make printable thermometer figures for chemistry tests. Type a temperature in Celsius, Kelvin or Fahrenheit and students read it from a liquid-in-glass thermometer, with a magnified view for the estimated digit, or from a digital probe thermometer.',
     keywords: ['thermometer', 'temperature', 'celsius', 'kelvin', 'fahrenheit', 'degrees', 'digital', 'probe', 'alcohol', 'mercury', 'measurement', 'lab'],
     Preview: TemperatureReadingPreview,
+  },
+  {
+    id: 'ph-reading',
+    name: 'pH Reading',
+    path: '/ph-reading',
+    blurb: 'A digital or analog pH meter, or pH paper, showing the pH you type.',
+    description:
+      'Make printable pH meter figures for chemistry tests. Type a pH and students read it from a digital pH meter, from an analog meter with a magnified view for the estimated digit, or by matching a strip of pH paper to its color chart.',
+    keywords: ['pH', 'meter', 'electrode', 'probe', 'digital', 'analog', 'needle', 'dial', 'paper', 'litmus', 'universal', 'indicator', 'color', 'chart', 'acid', 'base', 'acidic', 'basic', 'neutral', 'measurement', 'lab'],
+    Preview: PhReadingPreview,
   },
   {
     id: 'particle-diagram',
