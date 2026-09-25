@@ -236,3 +236,53 @@ One ring of a Bohr model, numbered from the nucleus out, holding 0 to 32 electro
 _Avoid_: Orbit, energy level (fine in help text), orbital (a different idea)
 
 A Bohr model can have a **key** like a particle diagram's: one proton, neutron and electron drawn exactly as in the figure, with its name.
+
+### Orbital diagrams
+
+**Orbital diagram**:
+A figure of one atom or ion's electrons: a square (or line) for each orbital, the orbitals of a sublevel side by side and labeled under them, with each electron drawn as an up or down arrow. The generator is Orbital Diagram. Bohr models, energy-level diagrams and Lewis dot diagrams aren't drawn.
+_Avoid_: Electron diagram, box diagram, orbital notation (both fine in search keywords), orbital box diagram
+
+**Sublevel**:
+The orbitals sharing a number and letter, such as 2p: s has 1 orbital, p has 3, d has 5, f has 7.
+_Avoid_: Subshell (fine in search keywords), orbital (that's one of them)
+
+**Orbital**:
+One square (or line) in an orbital diagram, holding up to two electrons.
+_Avoid_: Box (that's a particle diagram's container), square
+
+**Electron**:
+One arrow in an orbital, pointing up or down for its spin. A lone electron is drawn in the middle of its orbital; a pair is drawn up then down.
+_Avoid_: Arrow (fine in help text), dot
+
+**Configuration**:
+How many electrons each sublevel holds, written as 1s² 2s² 2p⁴. The ground-state configuration comes from the element, the charge and the configuration rule.
+_Avoid_: Electron arrangement, notation
+
+**Filling order**:
+The order sublevels fill in by the aufbau principle: 1s 2s 2p 3s 3p 4s 3d 4p 5s 4d 5p 6s 4f 5d 6p 7s 5f 6d 7p. The diagram draws sublevels in this order unless the teacher picks shell order (3d before 4s).
+_Avoid_: Aufbau order (fine in help text), energy order, Madelung order
+
+**Exception**:
+An element whose real ground state doesn't follow the filling order, such as Cr ([Ar] 4s¹ 3d⁵) or Cu ([Ar] 4s¹ 3d¹⁰).
+_Avoid_: Anomaly, irregular element
+
+**Configuration rule**:
+Whether the generator draws exceptions as they really are (the default) or as the filling order predicts, for classes that don't teach exceptions. The check follows the same rule.
+_Avoid_: Exception mode
+
+**Noble gas core**:
+The electrons of the largest noble gas with fewer electrons than the atom or ion, written in brackets ([Ar]) instead of drawn. Off by default.
+_Avoid_: Shorthand, abbreviated configuration, kernel
+
+**Scaffold**:
+What an orbital diagram figure leaves for the student: the symbol, the sublevel labels or the written configuration as a blank line, or the orbitals drawn empty.
+_Avoid_: Blank, hint
+
+**Change**:
+A teacher's edit to one orbital's electrons: empty, up, down, a pair, or two with the same spin. A diagram with any changes is a **changed diagram**.
+_Avoid_: Edit, error
+
+**Mistake**:
+One way a changed diagram differs from the ground state, written as a sentence naming the rule ("Hund's rule: 2p has a pair while one of its orbitals is empty"). A changed diagram with the right number of electrons and no Pauli exclusion mistake is an **excited state**; one breaking Pauli exclusion is **not allowed**.
+_Avoid_: Error, violation (fine in help text)

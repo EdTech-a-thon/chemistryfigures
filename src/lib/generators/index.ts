@@ -6,6 +6,7 @@ import type { Component } from 'svelte'
 import BohrModelPreview from './bohr-model/Preview.svelte'
 import LewisStructuresPreview from './lewis-structures/Preview.svelte'
 import MassReadingPreview from './mass-reading/Preview.svelte'
+import OrbitalDiagramPreview from './orbital-diagram/Preview.svelte'
 import ParticleDiagramPreview from './particle-diagram/Preview.svelte'
 import PhReadingPreview from './ph-reading/Preview.svelte'
 import TemperatureReadingPreview from './temperature-reading/Preview.svelte'
@@ -108,6 +109,16 @@ export const GENERATORS: Generator[] = [
       'Make printable Lewis structures for chemistry tests. Type a formula like H2O or SO4 2- and get its Lewis dot structure, with formal charges and resonance structures, a structure for students to complete, or a wrong one for students to find the mistakes in.',
     keywords: ['lewis', 'dot', 'electron', 'structure', 'structures', 'diagram', 'lone', 'pair', 'pairs', 'bond', 'bonds', 'bonding', 'covalent', 'molecule', 'polyatomic', 'ion', 'octet', 'formal', 'charge', 'resonance', 'valence', 'VSEPR'],
     Preview: LewisStructuresPreview,
+  },
+  {
+    id: 'orbital-diagram',
+    name: 'Orbital Diagram',
+    path: '/orbital-diagram',
+    blurb: 'Any atom or ion’s electron configuration as arrows in orbital boxes.',
+    description:
+      'Make printable orbital diagrams for chemistry tests. Pick an element and charge and get its electron configuration drawn as arrows in boxes, following the aufbau principle, Pauli exclusion and Hund’s rule, with exceptions, noble gas cores, blanks for students and deliberate mistakes.',
+    keywords: ['electron', 'configuration', 'orbital', 'orbitals', 'notation', 'box', 'boxes', 'arrows', 'spin', 'aufbau', 'hund', 'hunds', 'pauli', 'exclusion', 'sublevel', 'subshell', 'noble', 'gas', 'core', 'shorthand', 'excited', 'ground', 'state', 'ion', 'AP'],
+    Preview: OrbitalDiagramPreview,
   },
 ]
 
