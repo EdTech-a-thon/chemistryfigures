@@ -1,20 +1,22 @@
 <script lang="ts">
   // A top-loading digital balance showing a mass on its display, with a weigh
-  // boat of powder, a beaker of liquid or nothing on its pan. An analytical
-  // balance (3–4 decimal places) stands inside a glass draft shield.
-  import { digitalBalanceSize, displayText, type DigitalBalance, type PanContents } from './digital'
+  // boat of powder, a beaker of liquid, an object or nothing on its pan. An
+  // analytical balance (3–4 decimal places) stands inside a glass draft shield.
+  import { objectBounds, type Placed } from '../volume-by-displacement/objects'
+  import ObjectShape from '../volume-by-displacement/ObjectShape.svelte'
+  import { DIGITAL_PAN, digitalBalanceSize, displayText, type DigitalBalance, type PanContents } from './digital'
   import { segmentTextWidth, sevenSegment } from '$lib/shared/sevenSegment'
 
-  let { balance, mass, pan }: { balance: DigitalBalance; mass: number; pan: PanContents } = $props()
+  let { balance, mass, pan, object = null }: { balance: DigitalBalance; mass: number; pan: PanContents; object?: Placed | null } = $props()
 
-  const size = $derived(digitalBalanceSize(balance.analytical, pan))
+  const size = $derived(digitalBalanceSize(balance.analytical, pan, object ? objectBounds(object).top : undefined))
   // The display always has room for the balance's largest reading, like a
   // real one, with the mass right-aligned against the "g".
   const DIGIT_H = 32
   const DISPLAY_RIGHT = 222
   const text = $derived(displayText(balance, mass))
   const digits = $derived(sevenSegment(text, DISPLAY_RIGHT - segmentTextWidth(text, DIGIT_H), 208, DIGIT_H))
-  const cx = 190
+  const cx = DIGITAL_PAN.cx
 </script>
 
 <g transform="translate(0 {-size.top})" stroke-linejoin="round" stroke-linecap="round">
@@ -30,9 +32,11 @@
 
   <!-- pan on its post -->
   <rect x={cx - 10} y="160" width="20" height="13" fill="#fff" stroke="#111" stroke-width="2" />
-  <rect x={cx - 110} y="151" width="220" height="10" rx="3" fill="#fff" stroke="#111" stroke-width="2" />
+  <rect x={cx - 110} y={DIGITAL_PAN.top} width="220" height="10" rx="3" fill="#fff" stroke="#111" stroke-width="2" />
 
-  {#if pan === 'boat'}
+  {#if object}
+    <ObjectShape placed={object} />
+  {:else if pan === 'boat'}
     <path d="M {cx - 36} 128 Q {cx} 108 {cx + 36} 128 Z" fill="#c4c4c4" stroke="#111" stroke-width="1.5" />
     <path d="M {cx - 58} 128 H {cx + 58} L {cx + 42} 151 H {cx - 42} Z" fill="#fff" stroke="#111" stroke-width="2" />
   {:else if pan === 'beaker'}

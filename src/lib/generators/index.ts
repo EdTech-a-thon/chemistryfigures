@@ -53,7 +53,7 @@ export const GENERATORS: Generator[] = [
     blurb: 'A triple beam or digital balance showing the mass you type.',
     description:
       'Make printable balance figures for chemistry tests. Type a mass and get a digital, analytical or triple beam balance showing it, for students to read.',
-    keywords: ['balance', 'scale', 'digital', 'analytical', 'electronic', 'triple', 'beam', 'mass', 'grams', 'weigh', 'weight', 'measurement', 'lab'],
+    keywords: ['balance', 'scale', 'digital', 'analytical', 'electronic', 'triple', 'beam', 'mass', 'grams', 'weigh', 'weight', 'marble', 'rock', 'cube', 'object', 'density', 'measurement', 'lab'],
     Preview: MassReadingPreview,
   },
   {

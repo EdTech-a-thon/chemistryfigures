@@ -35,8 +35,17 @@ export function randomMass(balance: DigitalBalance, random: () => number = Math.
 export const PAN_CONTENTS = ['boat', 'beaker', 'empty'] as const
 export type PanContents = (typeof PAN_CONTENTS)[number]
 
-/** The drawing's size: taller when a beaker or a draft shield rises above the pan. */
-export function digitalBalanceSize(analytical: boolean, pan: PanContents) {
-  const top = analytical ? 10 : pan === 'beaker' ? 52 : pan === 'boat' ? 104 : 142
+/** Where things go on the pan: its middle and its top surface. */
+export const DIGITAL_PAN = { cx: 190, top: 151 }
+
+/** The drawing's size: taller when a beaker, an object or a draft shield
+ *  rises above the pan. An object, whose top is `objectTop`, sits on the pan
+ *  in place of its contents. */
+export function digitalBalanceSize(analytical: boolean, pan: PanContents, objectTop?: number) {
+  const top = analytical
+    ? 10
+    : objectTop !== undefined
+      ? Math.min(142, Math.floor(objectTop) - 6)
+      : pan === 'beaker' ? 52 : pan === 'boat' ? 104 : 142
   return { width: 380, height: 266 - top, top }
 }
