@@ -108,3 +108,45 @@ _Avoid_: Zoom, callout, inset
 **Answer key**:
 An optional line printed under the instrument stating its reading, so one figure can serve as both question and key.
 _Avoid_: Solution, label
+
+### Particle diagrams
+
+**Particle diagram**:
+A figure of atoms, ions and molecules scattered in a box or packed in a lattice, as in AP Chemistry's particulate-level questions. The generator is Particle Diagram.
+_Avoid_: Particulate diagram (fine in search keywords), particle model
+
+**Particle**:
+Whatever a particle diagram counts and scatters: an atom, an ion, a molecule or an ion cluster. A figure is built from a short list of particle kinds, each with a count.
+_Avoid_: Circle, dot, species, object (that's the solid in a volume by displacement figure)
+
+**Atom**:
+One drawn disc with a size (XS, S, M, L or XL) and a shade (white, light gray, gray, dark gray or black; no patterns), and no text: symbols such as "Ne" aren't drawn (the key is where names go).
+_Avoid_: Circle, ball, sphere
+
+**Ion**:
+One drawn disc carrying a charge, picked from +, −, 2+, 2−, 3+ and 3− and written in its middle with a true minus sign. Having a charge is what makes it an ion rather than an atom; the teacher doesn't choose separately.
+_Avoid_: Circle, charged atom
+
+**Molecule**:
+Atoms joined together: a center atom with outer atoms touching it, in a shape such as a pair (Cl₂), bent (H₂O) or four around (CCl₄). Never charged; polyatomic ions aren't drawn.
+_Avoid_: Compound, cluster
+
+**Ion cluster**:
+Ions joined together, drawn like a molecule but named honestly, e.g. an Na⁺Cl⁻ ion pair or a Mg²⁺ with two Cl⁻ around it.
+_Avoid_: Molecule (for joined ions), formula unit
+
+**Layout**:
+How a particle diagram's particles are arranged: scattered at random in the box, or in a lattice.
+_Avoid_: Arrangement, mode
+
+**Lattice**:
+A square grid of touching or evenly spaced atoms or ions, drawn for a solid, in one of four patterns: one kind (a pure metal), alternating (an ionic solid), substitutional (an alloy with some atoms swapped for another kind) or interstitial (an alloy with small atoms in the gaps).
+_Avoid_: Grid, crystal (fine in search keywords), array
+
+**Box**:
+The container a particle diagram is drawn in, with a single, double or no border. For scattered particles it is always the same square, never sized to the particles, so answer choices made one at a time line up; atom size is what sets how crowded it looks, and particles that don't fit are left out and the settings say so. Around a lattice it just fits the lattice, and has no border unless the teacher adds one. A figure is one box, with an optional chart title but no caption, choice letter or answer key.
+_Avoid_: Container, vessel, frame
+
+**Key**:
+An optional list beside the box: each particle kind drawn exactly as in the box with a name the teacher types ("Any positive ion", "CCl₄ molecule"), and an optional note line ("H₂O molecules are not shown"). A kind with a count of 0 appears only in the key. The figure can show the box and key, the box only, or the key only, so four answer choices made one at a time can share one key.
+_Avoid_: Legend

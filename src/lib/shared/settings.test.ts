@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { bool, choice, defineSettings, number, text } from './settings'
+import { bool, choice, defineSettings, json, number, text } from './settings'
 
 const example = defineSettings(
   {
@@ -53,5 +53,22 @@ describe('tidying stored settings', () => {
   it('gives equal keys exactly when two settings draw the same figure', () => {
     expect(example.keyOf({ ...example.defaults })).toBe(example.keyOf(example.defaults))
     expect(example.keyOf({ ...example.defaults, key: true })).not.toBe(example.keyOf(example.defaults))
+  })
+})
+
+describe('structured settings', () => {
+  const list = json<number[]>([1, 2], (v) => (Array.isArray(v) ? v.filter((n) => typeof n === 'number') : undefined))
+  const withList = defineSettings({ list })
+
+  it('round-trips a list through the address', () => {
+    const query = withList.toQuery({ list: [3, 4, 5] })
+    expect(withList.fromParams(new URLSearchParams(query))).toEqual({ list: [3, 4, 5] })
+    expect(withList.toQuery(withList.defaults)).toBe('')
+  })
+
+  it('falls back on text that is not JSON or not usable', () => {
+    expect(withList.fromParams(new URLSearchParams('list=%5B1')).list).toEqual([1, 2])
+    expect(withList.fromParams(new URLSearchParams('list=%22x%22')).list).toEqual([1, 2])
+    expect(withList.tidy({ list: [7, 'x'] }).list).toEqual([7])
   })
 })

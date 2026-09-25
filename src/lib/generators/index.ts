@@ -4,6 +4,7 @@
 
 import type { Component } from 'svelte'
 import MassReadingPreview from './mass-reading/Preview.svelte'
+import ParticleDiagramPreview from './particle-diagram/Preview.svelte'
 import TemperatureReadingPreview from './temperature-reading/Preview.svelte'
 import VolumeByDisplacementPreview from './volume-by-displacement/Preview.svelte'
 import VolumeReadingPreview from './volume-reading/Preview.svelte'
@@ -64,6 +65,16 @@ export const GENERATORS: Generator[] = [
       'Make printable thermometer figures for chemistry tests. Type a temperature in Celsius, Kelvin or Fahrenheit and students read it from a liquid-in-glass thermometer, with a magnified view for the estimated digit, or from a digital probe thermometer.',
     keywords: ['thermometer', 'temperature', 'celsius', 'kelvin', 'fahrenheit', 'degrees', 'digital', 'probe', 'alcohol', 'mercury', 'measurement', 'lab'],
     Preview: TemperatureReadingPreview,
+  },
+  {
+    id: 'particle-diagram',
+    name: 'Particle Diagram',
+    path: '/particle-diagram',
+    blurb: 'Atoms, ions and molecules scattered in a box or packed in a lattice.',
+    description:
+      'Make printable particle diagrams for AP Chemistry tests. Pick the atoms, ions and molecules, their sizes, shades and charges, and how many of each, and get them scattered in a box or packed in an ionic or alloy lattice, with a key.',
+    keywords: ['particulate', 'particles', 'atom', 'atoms', 'ion', 'ions', 'molecule', 'molecules', 'lattice', 'alloy', 'solid', 'liquid', 'gas', 'solution', 'ionic', 'AP', 'diagram', 'model', 'representation'],
+    Preview: ParticleDiagramPreview,
   },
 ]
 
