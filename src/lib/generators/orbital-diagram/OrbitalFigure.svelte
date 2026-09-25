@@ -53,9 +53,14 @@
     return `${shaft}M${x - (HEAD - 2)} ${to + back}L${x} ${to}L${x + HEAD - 2} ${to + back}`
   }
 
-  /** The arrows in one orbital: a lone electron in the middle, two side by side. */
-  const arrows = (fill: OrbitalFill) =>
-    fill.length === 1 ? [arrow(ORBITAL / 2, fill)] : [...fill].map((spin, i) => arrow(ORBITAL * (i ? 0.68 : 0.32), spin))
+  /** The arrows in one orbital: a lone electron in the middle, two side by
+   *  side. An up and down pair with half heads sits closer, since both barbs
+   *  point out; any other pair has a barb pointing at the other arrow. */
+  function arrows(fill: OrbitalFill) {
+    if (fill.length === 1) return [arrow(ORBITAL / 2, fill)]
+    const out = s.arrows === 'half' && fill === 'ud' ? 0.1 : 0.18
+    return [...fill].map((spin, i) => arrow(ORBITAL * (0.5 + (i ? out : -out)), spin))
+  }
 </script>
 
 <!-- one line, so no spaces creep in between the pieces -->

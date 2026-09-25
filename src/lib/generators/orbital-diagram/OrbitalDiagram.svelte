@@ -127,14 +127,6 @@
       {/if}
     </Section>
     <Section title="Configuration" summary={configSummary} icon={ListOrdered}>
-      {@render radios('Exceptions', CONFIGURATION_RULES, RULE_NAMES, s.rule, (rule) => setAtom(s.z, s.charge, rule))}
-      <p class="note">
-        {s.rule === 'real'
-          ? 'Cr, Cu, Ag, Au, Pd and a few others are drawn as they really are (Cr is [Ar] 4s¹ 3d⁵).'
-          : 'Every element is drawn as the filling order predicts (Cr is [Ar] 4s² 3d⁴).'}
-      </p>
-      {@render radios('Order', SUBLEVEL_ORDERS, ORDER_NAMES, s.order, (order) => (s.order = order))}
-      <p class="note">{s.order === 'filling' ? '4s comes before 3d, in the order they fill.' : '3d comes before 4s, grouped by shell.'}</p>
       <label class="check">
         <input type="checkbox" bind:checked={s.core} />
         <span>
@@ -142,6 +134,14 @@
           <small>Write the core in brackets, like [Ar], and draw only the orbitals after it.</small>
         </span>
       </label>
+      {@render radios('Order', SUBLEVEL_ORDERS, ORDER_NAMES, s.order, (order) => (s.order = order))}
+      <p class="note">{s.order === 'filling' ? '4s comes before 3d, in the order they fill.' : '3d comes before 4s, grouped by shell.'}</p>
+      {@render radios('Exceptions', CONFIGURATION_RULES, RULE_NAMES, s.rule, (rule) => setAtom(s.z, s.charge, rule))}
+      <p class="note">
+        {s.rule === 'real'
+          ? 'Cr, Cu, Ag, Au, Pd and a few others are drawn as they really are (Cr is [Ar] 4s¹ 3d⁵).'
+          : 'Every element is drawn as the filling order predicts (Cr is [Ar] 4s² 3d⁴).'}
+      </p>
     </Section>
     <Section title="Look" summary={lookSummary} icon={Palette}>
       {@render radios('Arrows', ARROW_STYLES, ARROW_NAMES, s.arrows, (arrows) => (s.arrows = arrows))}

@@ -13,7 +13,7 @@
 
 <div class="row">
   <span class="label">Color</span>
-  <div class="options" role="radiogroup" aria-label="{name} color">
+  <div class="options colors" role="radiogroup" aria-label="{name} color">
     {#each COLORS as c (c)}
       <button
         type="button"
@@ -25,7 +25,7 @@
         class:on={color === c}
         onclick={() => (color = c)}
       >
-        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="10" fill={COLOR_FILL[c]} stroke="#222" stroke-width="1.5" /></svg>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill={COLOR_FILL[c]} stroke="#222" stroke-width="1.5" /></svg>
       </button>
     {/each}
   </div>
@@ -45,12 +45,14 @@
   .row { display: flex; align-items: flex-start; gap: 0.6rem; margin-top: 0.55rem; }
   .label { flex: none; width: 3.6rem; padding-top: 0.35rem; font-size: 0.84rem; font-weight: 700; }
   .options { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+  /* Small enough for all the colors to fit on one line in a wide panel. */
+  .colors { gap: 0.2rem; }
   .small { padding: 0.3rem 0.6rem; font-size: 0.84rem; min-width: 2.4rem; }
   .swatch {
     display: grid;
     place-items: center;
-    width: 2.1rem;
-    height: 2.1rem;
+    width: 1.9rem;
+    height: 1.9rem;
     padding: 0;
     border: 1.5px solid var(--border);
     border-radius: 999px;
