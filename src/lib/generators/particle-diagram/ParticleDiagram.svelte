@@ -138,7 +138,7 @@
           </div>
           {#if counted}{@render shuffle()}{/if}
         </div>
-        {#if box.missing}
+        {#if box.missing && s.show !== 'key'}
           <p class="warning" role="status">There’s only room for {latticeRoom(s)} in this lattice. Add rows or columns, or place fewer.</p>
         {/if}
         <p class="part">{s.pattern === 'pure' ? 'Atom or ion' : 'Main'}</p>

@@ -66,7 +66,8 @@ function pitch(o: LatticeOptions) {
 export function lattice(o: LatticeOptions) {
   const step = pitch(o)
   const random = seededRandom(o.seed)
-  const edge = o.pattern === 'pure' ? RADIUS[o.main.size] : Math.max(RADIUS[o.main.size], RADIUS[o.second.size])
+  // only swapped or alternating second atoms reach the lattice's edge
+  const edge = o.pattern === 'pure' || o.pattern === 'interstitial' ? RADIUS[o.main.size] : Math.max(RADIUS[o.main.size], RADIUS[o.second.size])
   const disc = (look: Look, col: number, row: number): Disc => ({ ...look, r: RADIUS[look.size], x: edge + col * step, y: edge + row * step })
 
   const swapped = o.pattern === 'substitute' ? pick(o.rows * o.columns, o.secondCount, random) : new Set<number>()

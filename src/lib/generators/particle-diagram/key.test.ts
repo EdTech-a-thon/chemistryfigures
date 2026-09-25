@@ -149,6 +149,11 @@ describe('the key for screen readers', () => {
     )
   })
 
+  it('describes a molecule whole, not just its center', () => {
+    const water: ParticleKind = { count: 3, shape: 'bent', look: { size: 'm', shade: 'gray', charge: '' }, outer: { size: 's', shade: 'white', charge: '' }, name: 'H₂O' }
+    expect(keyLabel([water], '')).toBe('Key: bent molecule (medium gray with 2 small white), “H₂O”')
+  })
+
   it('can start with other words, for a figure of only the key', () => {
     expect(keyLabel([anion], '', 'A particle diagram key')).toBe('A particle diagram key: large light gray − ion, “Any negative ion”')
   })

@@ -1,9 +1,9 @@
 // Particle Diagram's settings, as they appear in the page address.
 
 import { choice, defineSettings, json, number, text } from '$lib/shared/settings'
-import { LATTICE_PATTERNS, LATTICE_SPACINGS, lattice } from './lattice'
+import { LATTICE_PATTERNS, LATTICE_SPACINGS, lattice, latticeRoom } from './lattice'
 import { scatter } from './layout'
-import { DEFAULT_OUTER, MAX_NAME, tidyKinds, tidyLook, type Disc, type Look, type ParticleKind } from './particles'
+import { DEFAULT_OUTER, MAX_NAME, isObject, tidyKinds, tidyLook, type Disc, type Look, type ParticleKind } from './particles'
 
 /** Particles scattered at random in the box, or packed in a lattice. */
 export const LAYOUTS = ['scattered', 'lattice'] as const
@@ -37,7 +37,7 @@ const DEFAULT_KINDS: ParticleKind[] = [
   { count: 4, shape: 'single', look: { size: 's', shade: 'white', charge: '+' }, outer: { ...DEFAULT_OUTER } },
 ]
 
-const look = (fallback: Look) => json(fallback, (v) => (v && typeof v === 'object' && !Array.isArray(v) ? tidyLook(v) : undefined))
+const look = (fallback: Look) => json(fallback, (v) => (isObject(v) ? tidyLook(v, fallback) : undefined))
 
 export const particleSettings = defineSettings(
   {
@@ -83,17 +83,19 @@ export function boxParticles(s: ParticleSettings) {
   return { discs: discs.map((d) => ({ ...d, x: d.x + inset, y: d.y + inset })), missing }
 }
 
-/** A lattice's one or two atoms or ions as particle kinds, for its key. */
-function latticeKinds(s: ParticleSettings): ParticleKind[] {
-  const kind = (look: Look, name: string): ParticleKind => ({
-    count: 1,
+/** A lattice's atoms or ions as particle kinds, for its key: the main one,
+ *  and the second one when any of it is drawn. */
+function latticeKinds(s: ParticleSettings, discs: Disc[]): ParticleKind[] {
+  const kind = (look: Look, name: string, count: number): ParticleKind => ({
+    count,
     shape: 'single',
     look,
     outer: { ...DEFAULT_OUTER },
     ...(name.trim() ? { name } : {}),
   })
-  const main = kind(s.main, s.mainName)
-  return s.pattern === 'pure' ? [main] : [main, kind(s.second, s.secondName)]
+  const seconds = s.pattern === 'pure' ? 0 : s.pattern === 'alternate' ? Math.floor((s.rows * s.columns) / 2) : Math.min(s.secondCount, latticeRoom(s))
+  const main = kind(s.main, s.mainName, discs.length - seconds)
+  return seconds ? [main, kind(s.second, s.secondName, seconds)] : [main]
 }
 
 export interface BoxContents {
@@ -120,6 +122,6 @@ export function boxContents(s: ParticleSettings): BoxContents {
     border,
     discs: grid.discs.map((d) => ({ ...d, x: d.x + pad, y: d.y + pad })),
     missing: grid.missing,
-    kinds: latticeKinds(s),
+    kinds: latticeKinds(s, grid.discs),
   }
 }

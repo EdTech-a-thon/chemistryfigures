@@ -3,7 +3,7 @@
 // typed, with an optional note line at the bottom. Also where the box and key
 // sit in the figure for each Show setting. See CONTEXT.md "Key".
 
-import { describeLook, kindName, particleDiscs, type Disc, type ParticleKind } from './particles'
+import { describeParticle, particleDiscs, type Disc, type ParticleKind } from './particles'
 import { BOX_SIDE, type Show } from './settings'
 
 /** Space inside the key's border. */
@@ -132,6 +132,6 @@ export function figureLayout(show: Show, key: Size, box: Size = { width: BOX_SID
  *  “Any negative ion”; small white + ion. H₂O molecules are not shown",
  *  starting with `lead`. */
 export function keyLabel(kinds: ParticleKind[], note: string, lead = 'Key') {
-  const lines = kinds.map((k) => `${describeLook(k.look)} ${kindName(k).toLowerCase()}${k.name ? `, “${k.name}”` : ''}`)
+  const lines = kinds.map((k) => `${describeParticle(k)}${k.name ? `, “${k.name}”` : ''}`)
   return `${lead}: ${lines.join('; ')}${note.trim() ? `. ${note.trim()}` : ''}`
 }

@@ -62,6 +62,12 @@ describe('lattices', () => {
     expect(closest(discs)).toBeGreaterThanOrEqual(-1e-9)
   })
 
+  it('interstitial: the edge only makes room for the main atoms, since gap atoms are always inside', () => {
+    const { width } = lattice(options({ pattern: 'interstitial', secondCount: 2, main: { ...big, size: 'xs' }, second: { ...small, size: 'xl' } }))
+    const pitch = Math.SQRT2 * (RADIUS.xs + RADIUS.xl)
+    expect(width).toBeCloseTo(2 * RADIUS.xs + 3 * pitch)
+  })
+
   it('interstitial atoms too big for the gaps push the lattice apart', () => {
     const { discs } = lattice(options({ pattern: 'interstitial', secondCount: 6, second: { ...small, size: 'm' } }))
     expect(closest(discs)).toBeCloseTo(0)

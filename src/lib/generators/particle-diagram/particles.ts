@@ -101,28 +101,42 @@ export function kindName(kind: ParticleKind) {
 export const describeLook = (look: Look) =>
   [SIZE_WORDS[look.size], SHADE_NAMES[look.shade].toLowerCase(), chargeText(look.charge)].filter(Boolean).join(' ')
 
-/** e.g. "4 large light gray − ions" or "3 bent molecules (medium gray with
- *  2 small white)" */
-export function describeKind(kind: ParticleKind) {
-  const noun = kindName(kind).toLowerCase() + (kind.count === 1 ? '' : 's')
-  if (!isJoined(kind)) return `${kind.count} ${describeLook(kind.look)} ${noun}`
+/** One particle of a kind, or `count` of them, in words. */
+function describe(kind: ParticleKind, count?: number) {
+  const noun = kindName(kind).toLowerCase() + (count === undefined || count === 1 ? '' : 's')
+  if (!isJoined(kind)) return [count, describeLook(kind.look), noun].filter((w) => w !== undefined).join(' ')
   const outers = DIRECTIONS[kind.shape].length
   const around = outers === 1 ? `and ${describeLook(kind.outer)}` : `with ${outers} ${describeLook(kind.outer)}`
-  return [kind.count, SHAPE_WORDS[kind.shape], noun].filter(Boolean).join(' ') + ` (${describeLook(kind.look)} ${around})`
+  return [count, SHAPE_WORDS[kind.shape], noun].filter((w) => w !== undefined && w !== '').join(' ') + ` (${describeLook(kind.look)} ${around})`
 }
+
+/** e.g. "4 large light gray − ions" or "3 bent molecules (medium gray with
+ *  2 small white)" */
+export const describeKind = (kind: ParticleKind) => describe(kind, kind.count)
+
+/** One of a kind, e.g. "large light gray − ion" or "bent molecule (medium
+ *  gray with 2 small white)" */
+export const describeParticle = (kind: ParticleKind) => describe(kind)
 
 /** The outer discs' look a new or old kind starts with. */
 export const DEFAULT_OUTER: Look = { size: 's', shade: 'white', charge: '' }
 
 // Tidying ------------------------------------------------------------------
 
-const isObject = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)
+export const isObject = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)
 const oneOf = <T extends string>(options: readonly T[], v: unknown, fallback: T) =>
   options.includes(v as T) ? (v as T) : fallback
 
-export function tidyLook(v: unknown): Look {
+const PLAIN: Look = { size: 'm', shade: 'white', charge: '' }
+
+/** A valid look, taking whatever `v` leaves out from `fallback`. */
+export function tidyLook(v: unknown, fallback: Look = PLAIN): Look {
   const raw = isObject(v) ? v : {}
-  return { size: oneOf(SIZES, raw.size, 'm'), shade: oneOf(SHADES, raw.shade, 'white'), charge: oneOf(CHARGES, raw.charge, '') }
+  return {
+    size: oneOf(SIZES, raw.size, fallback.size),
+    shade: oneOf(SHADES, raw.shade, fallback.shade),
+    charge: oneOf(CHARGES, raw.charge, fallback.charge),
+  }
 }
 
 export function tidyKind(v: unknown): ParticleKind | undefined {

@@ -22,34 +22,50 @@ export function seededRandom(seed: number) {
 export const SCATTER_GAP = 7
 const TRIES = 400
 
+/** Browsers may differ in the last digit of sin, cos and hypot, which could
+ *  tip a close call the other way and move every particle after it. Rounding
+ *  to thousandths, and comparing squared distances (plain arithmetic, the
+ *  same everywhere), keeps the server and every browser in step. */
+const round = (n: number) => Math.round(n * 1000) / 1000
+
 /** How far a particle's discs reach from its middle. */
-const reach = (kind: ParticleKind) => Math.max(...particleDiscs(kind).map((d) => Math.hypot(d.x, d.y) + d.r))
+const reach = (kind: ParticleKind) => round(Math.max(...particleDiscs(kind).map((d) => Math.hypot(d.x, d.y) + d.r)))
 
 /** Every particle placed at random in a `width` × `height` box and turned at
  *  random, at least SCATTER_GAP from every other and from the edge. Bigger
  *  particles go first, since they're the hardest to fit; any that find no
- *  room are left out and counted in `missing`. */
+ *  room are left out and counted in `missing`, and once one of a kind finds
+ *  none the rest of that kind aren't tried. */
 export function scatter(kinds: ParticleKind[], width: number, height: number, seed: number) {
   const random = seededRandom(seed)
-  const wanted = kinds.flatMap((kind, order) => Array.from({ length: kind.count }, () => ({ kind, order, reach: reach(kind) })))
+  const wanted = kinds.flatMap((kind, order) => {
+    const r = reach(kind)
+    return Array.from({ length: kind.count }, () => ({ kind, order, reach: r }))
+  })
   wanted.sort((a, b) => b.reach - a.reach || a.order - b.order)
 
   const discs: Disc[] = []
+  const full = new Set<number>()
   let missing = 0
-  for (const { kind, reach: r } of wanted) {
+  for (const { kind, order, reach: r } of wanted) {
     const margin = r + SCATTER_GAP
-    const room = width >= 2 * margin && height >= 2 * margin
+    const room = !full.has(order) && width >= 2 * margin && height >= 2 * margin
     let found: Disc[] | undefined
     for (let i = 0; room && i < TRIES && !found; i++) {
       const angle = random() * 2 * Math.PI
       const x = margin + random() * (width - 2 * margin)
       const y = margin + random() * (height - 2 * margin)
-      const candidate = particleDiscs(kind, angle).map((d) => ({ ...d, x: d.x + x, y: d.y + y }))
-      const clear = candidate.every((c) => discs.every((o) => Math.hypot(c.x - o.x, c.y - o.y) >= c.r + o.r + SCATTER_GAP))
+      const candidate = particleDiscs(kind, angle).map((d) => ({ ...d, x: round(d.x + x), y: round(d.y + y) }))
+      const clear = candidate.every((c) =>
+        discs.every((o) => (c.x - o.x) ** 2 + (c.y - o.y) ** 2 >= (c.r + o.r + SCATTER_GAP) ** 2),
+      )
       if (clear) found = candidate
     }
     if (found) discs.push(...found)
-    else missing++
+    else {
+      missing++
+      full.add(order)
+    }
   }
   return { discs, missing }
 }

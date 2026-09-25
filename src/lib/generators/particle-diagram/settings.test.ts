@@ -62,6 +62,14 @@ describe('what the box holds', () => {
     ])
   })
 
+  it('leaves the second kind out of the key when none of it is drawn', () => {
+    const lattice = { ...d, layout: 'lattice' as const }
+    expect(boxContents({ ...lattice, pattern: 'substitute', secondCount: 0 }).kinds).toHaveLength(1)
+    expect(boxContents({ ...lattice, pattern: 'interstitial', rows: 1, secondCount: 3 }).kinds).toHaveLength(1)
+    expect(boxContents({ ...lattice, pattern: 'alternate', rows: 1, columns: 1 }).kinds).toHaveLength(1)
+    expect(boxContents({ ...lattice, pattern: 'substitute', secondCount: 2 }).kinds).toHaveLength(2)
+  })
+
   it('counts second atoms beyond the lattice’s room', () => {
     const s = { ...d, layout: 'lattice' as const, pattern: 'interstitial' as const, rows: 2, columns: 2, secondCount: 3 }
     expect(boxContents(s).missing).toBe(2)
@@ -79,5 +87,10 @@ describe('lattice settings in the address', () => {
     const s = particleSettings.fromParams(new URLSearchParams(`main=${encodeURIComponent(main)}&second=nonsense`))
     expect(s.main).toEqual({ size: 'xl', shade: 'dark', charge: '2+' })
     expect(s.second).toEqual(particleSettings.defaults.second)
+  })
+
+  it('fill what a look leaves out from that look’s own default', () => {
+    const s = particleSettings.fromParams(new URLSearchParams(`main=${encodeURIComponent('{"shade":"black"}')}`))
+    expect(s.main).toEqual({ ...particleSettings.defaults.main, shade: 'black' })
   })
 })

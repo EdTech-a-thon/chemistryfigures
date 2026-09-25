@@ -47,6 +47,27 @@ describe('scattering particles in the box', () => {
     expect(discs.length + missing).toBe(60)
   })
 
+  it('rounds positions to thousandths, so every browser and the server place the same', () => {
+    const joined: ParticleKind[] = [{ count: 8, shape: 'bent', look: { size: 'm', shade: 'gray', charge: '' }, outer: { size: 's', shade: 'white', charge: '' } }]
+    for (const d of scatter(joined, 300, 300, 4).discs) {
+      expect(Math.round(d.x * 1000) / 1000).toBe(d.x)
+      expect(Math.round(d.y * 1000) / 1000).toBe(d.y)
+    }
+  })
+
+  it('stops trying a kind once one of it finds no room, still counting the rest', () => {
+    const crowd: ParticleKind[] = Array.from({ length: 4 }, () => ({
+      count: 60,
+      shape: 'cross' as const,
+      look: { size: 'xl' as const, shade: 'gray' as const, charge: '' as const },
+      outer: { size: 'xl' as const, shade: 'white' as const, charge: '' as const },
+    }))
+    const started = performance.now()
+    const { discs, missing } = scatter(crowd, 300, 300, 1)
+    expect(performance.now() - started).toBeLessThan(250)
+    expect(discs.length / 5 + missing).toBe(240)
+  })
+
   it('draws nothing for a kind with a count of 0', () => {
     expect(scatter([{ ...kinds[0], count: 0 }], 300, 300, 1)).toEqual({ discs: [], missing: 0 })
   })

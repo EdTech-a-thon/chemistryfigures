@@ -7,19 +7,17 @@
   import Discs from './Discs.svelte'
   import KeyDrawing from './KeyDrawing.svelte'
   import { figureLayout, keyLabel, keyLayout } from './key'
-  import { describeKind, describeLook, kindName } from './particles'
+  import { describeKind, describeParticle } from './particles'
   import { DOUBLE_INSET, type BoxContents, type ParticleSettings } from './settings'
 
   let { settings, box, svg = $bindable() }: { settings: ParticleSettings; box: BoxContents; svg?: SVGSVGElement } = $props()
-
-  const INSET = DOUBLE_INSET
 
   const key = $derived(keyLayout(box.kinds, settings.keyNote))
   const layout = $derived(figureLayout(settings.show, key, box))
 
   const boxLabel = $derived(
     settings.layout === 'lattice'
-      ? `A particle diagram: a lattice of ${box.kinds.map((k) => `${describeLook(k.look)} ${kindName(k).toLowerCase()}s`).join(' and ')}`
+      ? `A particle diagram: a lattice of ${box.kinds.map((k) => `${describeParticle(k)}s`).join(' and ')}`
       : `A particle diagram: ${
           box.kinds
             .filter((k) => k.count)
@@ -43,7 +41,15 @@
         <rect x="0.75" y="0.75" width={box.width - 1.5} height={box.height - 1.5} fill="none" stroke="#222" stroke-width="1.5" />
       {/if}
       {#if box.border === 'double'}
-        <rect x={INSET} y={INSET} width={box.width - 2 * INSET} height={box.height - 2 * INSET} fill="none" stroke="#222" stroke-width="1.5" />
+        <rect
+          x={DOUBLE_INSET}
+          y={DOUBLE_INSET}
+          width={box.width - 2 * DOUBLE_INSET}
+          height={box.height - 2 * DOUBLE_INSET}
+          fill="none"
+          stroke="#222"
+          stroke-width="1.5"
+        />
       {/if}
       <Discs discs={box.discs} />
     </g>
