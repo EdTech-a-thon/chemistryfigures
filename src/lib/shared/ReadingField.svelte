@@ -11,12 +11,13 @@
     decimals: number
     min: number
     max: number
-    unit: string
+    /** what the reading is in, e.g. "mL"; a pH has none */
+    unit?: string
     onchange: (value: number) => void
     /** picks a random valid reading; without it there's no Random button */
     onrandom?: () => void
   }
-  let { label, value, decimals, min, max, unit, onchange, onrandom }: Props = $props()
+  let { label, value, decimals, min, max, unit = '', onchange, onrandom }: Props = $props()
 
   const id = $props.id()
   let input: HTMLInputElement
@@ -57,12 +58,12 @@
       oninput={update}
       onchange={commit}
     />
-    <span class="unit">{unit}</span>
+    {#if unit}<span class="unit">{unit}</span>{/if}
     {#if onrandom}
       <button type="button" class="btn-ghost random" onclick={onrandom}><Dices size={17} aria-hidden="true" /> Random</button>
     {/if}
   </div>
-  <p class="hint">From {min} to {max} {unit}, {decimals === 0 ? 'in whole numbers' : decimals === 1 ? 'to one decimal place' : `to ${decimals} decimal places`}.</p>
+  <p class="hint">From {min} to {max}{unit ? ` ${unit}` : ''}, {decimals === 0 ? 'in whole numbers' : decimals === 1 ? 'to one decimal place' : `to ${decimals} decimal places`}.</p>
 </div>
 
 <style>
