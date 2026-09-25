@@ -31,8 +31,10 @@
     [s.titleMode === 'text' && s.title ? `“${s.title}”` : 'No title', s.answerKey ? 'answer key' : 'no answer key'].join(', '),
   )
 
-  /** Mass Reading with the same object on the balance's pan. */
-  const massLink = $derived(`/mass-reading?${massSettings.toQuery({ ...massSettings.defaults, object: s.object, marbles: s.marbles })}`)
+  /** Mass Reading with the same object on a digital balance's pan. */
+  const massLink = $derived(
+    `/mass-reading?${massSettings.toQuery({ ...massSettings.defaults, instrument: 'digital', object: s.object, marbles: s.marbles })}`,
+  )
 
   const setReadings = (before: number, after: number) => Object.assign(s, fixReadings(scale, before, after))
 
