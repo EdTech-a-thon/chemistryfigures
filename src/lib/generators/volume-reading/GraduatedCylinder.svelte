@@ -1,7 +1,10 @@
 <script lang="ts">
   // A graduated cylinder holding liquid up to the reading, drawn at `zoom`
   // (1 for the whole instrument; more inside a magnifier, where finer marks
-  // appear and lines and numbers stay a comfortable size).
+  // appear and lines and numbers stay a comfortable size). `children` is
+  // anything sitting in the liquid (drawn in the same units, in front of the
+  // liquid and behind the marks and glass).
+  import type { Snippet } from 'svelte'
   import { legibleMarks, marks } from '$lib/shared/marks'
   import { sizeAt } from '$lib/shared/magnify'
   import { cylinderLayout } from './cylinder'
@@ -15,8 +18,9 @@
     reading: number
     tint: LiquidTint
     zoom?: number
+    children?: Snippet
   }
-  let { scale, size, reading, tint, zoom = 1 }: Props = $props()
+  let { scale, size, reading, tint, zoom = 1, children }: Props = $props()
 
   const at = $derived(cylinderLayout(scale, size))
   const k = $derived(sizeAt(zoom))
@@ -24,7 +28,7 @@
   const liquid = $derived(LIQUID_COLORS[tint])
   // A cylinder isn't marked at 0.
   const shown = $derived(
-    legibleMarks(marks({ ...scale, max: scale.capacity }), scale.minorEvery * at.perMl * zoom, 16).filter((m) => m.value > 0),
+    legibleMarks(marks({ ...scale, from: scale.lowest, max: scale.capacity }), scale.minorEvery * at.perMl * zoom, 16).filter((m) => m.value > 0),
   )
 
   const surface = $derived(meniscusCurve(at.left, at.right, at.yOf(reading), at.meniscus))
@@ -51,6 +55,7 @@
       fill={liquid.fill}
     />
   {/if}
+  {@render children?.()}
 
   <ScaleTicks {shown} left={at.left} tubeW={at.tubeW} yOf={at.yOf} {k} {font} />
   <text x={at.cx} y={at.yOf(scale.capacity) - 22} text-anchor="middle" font-size={font} fill="#111">mL</text>

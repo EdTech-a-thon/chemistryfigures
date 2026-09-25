@@ -35,7 +35,7 @@ _Avoid_: Template, favorite
 ### Measurement figures
 
 **Instrument**:
-The piece of lab equipment a figure shows, drawn so students can read a measurement from it. A figure shows exactly one instrument.
+The piece of lab equipment a figure shows, drawn so students can read a measurement from it. A figure shows exactly one instrument; a volume by displacement figure shows the same graduated cylinder twice, before and after the object goes in.
 _Avoid_: Tool, device, apparatus
 
 **Reading**:
@@ -43,12 +43,16 @@ The value an instrument shows, which the teacher types and students read back. O
 _Avoid_: Value, measurement, answer
 
 **Graduated cylinder**:
-A volume instrument in 10, 25, 50 or 100 mL, labeled every tenth of its capacity.
+A volume instrument in 10, 25, 50, 100, 250 or 1000 mL, labeled every tenth of its capacity except where real ones differ (the 250 mL has 2 mL marks from 10 mL up, numbered 10, 30, 50… 250, and can't read below 10 mL). Volume by displacement uses only the four smaller sizes.
 _Avoid_: Measuring cylinder
 
 **Buret**:
 A 50 mL volume instrument that reads from 0 at the top down to 50, drained through a stopcock at the bottom.
 _Avoid_: Burette, buerette
+
+**Beaker**:
+A volume instrument in small (50 mL), medium (250 mL) or large (600 mL), coarsely marked every 10, 25 or 50 mL and read to the whole mL.
+_Avoid_: Cup, jar
 
 **Meniscus**:
 The curved top surface of a liquid; a volume reading is taken at its bottom.
@@ -65,8 +69,40 @@ _Avoid_: Scale, beam balance
 The weight slid along one beam of a triple beam balance.
 _Avoid_: Slider, poise, weight
 
+**Liquid-in-glass thermometer**:
+A temperature instrument whose colored liquid rises from a bulb up a fine bore past a scale marked every 1 °C (−10 to 110 °C), 1 K (260 to 390 K) or 2 °F (10 to 230 °F), read at the flat top of the column.
+_Avoid_: Glass thermometer, alcohol thermometer, mercury thermometer
+
+**Digital thermometer**:
+A temperature instrument whose handheld meter shows 0 to 2 decimal places, wired to a steel probe standing in a beaker; it reads −50 to 150 °C or the same range in K or °F.
+_Avoid_: Probe (alone), temperature probe, electronic thermometer
+
+**Unit**:
+The temperature scale a thermometer reads in: Celsius (°C), Kelvin (K, never °K) or Fahrenheit (°F). Changing it converts the reading.
+_Avoid_: Scale (that is the marks), degrees
+
+**Volume by displacement**:
+Finding an object's volume from how far it raises the water in a graduated cylinder: the after reading minus the before reading. A figure shows the cylinder before and after, side by side.
+_Avoid_: Water displacement (fine in search keywords, not as the name)
+
+**Object**:
+The solid dropped into the cylinder in a volume by displacement figure: one to five marbles, a rock, or a cube. It rests on the bottom, always fully under water, and is drawn plausibly sized rather than to scale.
+_Avoid_: Sample, solid, item
+
+**Before reading** / **After reading**:
+The two readings in a volume by displacement figure, taken before and after the object goes in. The after reading is always higher.
+_Avoid_: Initial/final volume, start/end
+
+**Displaced volume**:
+The after reading minus the before reading, which is the object's volume.
+_Avoid_: Difference, change
+
+**Caption**:
+The short line under each cylinder in a volume by displacement figure, "Before" and "After" unless the teacher changes them.
+_Avoid_: Label, subtitle
+
 **Magnifier**:
-An enlarged circle showing a small stretch of an instrument's scale around the reading, beside or instead of the whole instrument.
+An enlarged circle showing a small stretch of an instrument's scale around the reading, beside or instead of the whole instrument. In a volume by displacement figure it's optional, with one beside each cylinder, and never replaces the cylinders.
 _Avoid_: Zoom, callout, inset
 
 **Answer key**:

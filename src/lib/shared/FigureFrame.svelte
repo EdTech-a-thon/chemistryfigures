@@ -3,6 +3,7 @@
   // optional chart title across the top and the optional answer key line
   // under it. The drawing is placed at (0, 0) and is `width` × `height`.
   import type { Snippet } from 'svelte'
+  import { getFigureAlign } from './figureAlign'
 
   interface Props {
     width: number
@@ -18,6 +19,7 @@
   const PAD = 16
   const TITLE_H = 40
   const KEY_H = 36
+  const align = getFigureAlign()
   const top = $derived(PAD + (title ? TITLE_H : 0))
   const boxW = $derived(width + 2 * PAD)
   const boxH = $derived(top + height + (answerKey ? KEY_H : 0) + PAD)
@@ -27,6 +29,7 @@
   bind:this={svg}
   xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 {boxW} {boxH}"
+  preserveAspectRatio="{align} meet"
   width={boxW}
   height={boxH}
   role="img"

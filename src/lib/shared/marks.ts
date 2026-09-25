@@ -15,6 +15,8 @@ export function marks({ max, labelEvery, minorEvery, from = 0 }: { max: number; 
   const perLabel = Math.round(labelEvery / minorEvery)
   // A medium mark halfway between numbers, when halfway falls on a mark.
   const perMedium = perLabel % 2 === 0 ? perLabel / 2 : 0
+  // Numbered from where the scale starts, so one starting at 10 mL reads
+  // 10, 30, 50…
   const count = Math.round((max - from) / minorEvery)
   const list: Mark[] = []
   for (let i = 0; i <= count; i++) {
@@ -29,11 +31,14 @@ export function marks({ max, labelEvery, minorEvery, from = 0 }: { max: number; 
  *  smallest marks: marks too close to tell apart are left out, and numbers
  *  too close to fit are thinned to every second, fifth… major mark. */
 export function legibleMarks(list: Mark[], minorGap: number, labelRoom: number): Mark[] {
-  const perLabel = list.findIndex((m, i) => i > 0 && m.kind === 'major')
-  if (perLabel < 1) return list
+  // steps between numbers, measured between the first two, since the scale
+  // may start partway between them
+  const firstMajor = list.findIndex((m) => m.kind === 'major')
+  const perLabel = list.findIndex((m, i) => i > firstMajor && m.kind === 'major') - firstMajor
+  if (firstMajor < 0 || perLabel < 1) return list
   const labelGap = perLabel * minorGap
   const labelStep = [1, 2, 5, 10, 20, 50].find((n) => n * labelGap >= labelRoom) ?? 100
-  const perMedium = list.findIndex((m) => m.kind === 'medium')
+  const perMedium = list.some((m) => m.kind === 'medium') ? perLabel / 2 : 0
   let major = 0
   return list.flatMap((m) => {
     if (m.kind === 'minor' && minorGap < 2.4) return []

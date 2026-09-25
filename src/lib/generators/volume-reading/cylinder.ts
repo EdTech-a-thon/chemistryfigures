@@ -5,7 +5,7 @@
 import type { CylinderSize, Scale } from './scale'
 
 const SCALE_H = 400
-const TUBE_W: Record<CylinderSize, number> = { '10': 36, '25': 42, '50': 50, '100': 58 }
+const TUBE_W: Record<CylinderSize, number> = { '10': 36, '25': 42, '50': 50, '100': 58, '250': 70, '1000': 88 }
 
 export function cylinderLayout(scale: Scale, size: CylinderSize) {
   const tubeW = TUBE_W[size]

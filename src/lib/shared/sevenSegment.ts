@@ -1,4 +1,4 @@
-// Seven-segment digits, like a balance's display, as polygons. A digit cell is
+// Seven-segment digits, like a digital instrument's display, as polygons. A digit cell is
 // 0.64 of its height wide; a decimal point takes a narrow cell of its own.
 
 const SEGMENTS: Record<string, string> = {

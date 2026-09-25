@@ -3,7 +3,7 @@
   // boat of powder, a beaker of liquid or nothing on its pan. An analytical
   // balance (3–4 decimal places) stands inside a glass draft shield.
   import { digitalBalanceSize, displayText, type DigitalBalance, type PanContents } from './digital'
-  import { segmentTextWidth, sevenSegment } from './sevenSegment'
+  import { segmentTextWidth, sevenSegment } from '$lib/shared/sevenSegment'
 
   let { balance, mass, pan }: { balance: DigitalBalance; mass: number; pan: PanContents } = $props()
 

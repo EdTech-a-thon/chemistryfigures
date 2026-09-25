@@ -37,14 +37,21 @@ export function magnifierLayout(view: MagnifierView, width: number, height: numb
   const atTop = { x: 0, y: 0 }
   if (view === 'whole') return { width, height, origin: atTop, magnifier: null }
   if (view === 'magnifier') return { width: 2 * R, height: 2 * R, origin: null, magnifier: { x: R, y: R, r: R } }
+  // Room for the outlined region where it hangs past the drawing's edges (a
+  // narrow thermometer is slimmer than the region around its reading).
+  const left = Math.max(0, source.r - source.x)
+  const above = Math.max(0, source.r - source.y)
+  const below = Math.max(0, source.y + source.r - height)
+  const tall = above + height + below
   // A drawing shorter than the magnifier is centered beside it.
-  const origin = { x: 0, y: Math.max(0, R - height / 2) }
-  const y = Math.min(Math.max(origin.y + source.y, R), Math.max(R, origin.y + height - R))
+  const origin = { x: left, y: Math.max(0, R - tall / 2) + above }
+  const total = Math.max(tall, 2 * R)
+  const y = Math.min(Math.max(origin.y + source.y, R), Math.max(R, total - R))
   return {
-    width: width + GAP + 2 * R,
-    height: Math.max(height, 2 * R),
+    width: left + width + GAP + 2 * R,
+    height: total,
     origin,
-    magnifier: { x: width + GAP + R, y, r: R },
+    magnifier: { x: left + width + GAP + R, y, r: R },
   }
 }
 
