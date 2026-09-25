@@ -1,6 +1,6 @@
 <script lang="ts">
-  // Particle Diagram: list the kinds of atoms and ions, say how many of each,
-  // and get a box with them scattered in it.
+  // Particle Diagram: list the kinds of atoms, ions, molecules and ion
+  // clusters, say how many of each, and get a box with them scattered in it.
   import { Atom, Dices, Plus, Square, Trash2, Type } from '@lucide/svelte'
   import GeneratorPage from '$lib/shared/GeneratorPage.svelte'
   import LabelField from '$lib/shared/LabelField.svelte'
@@ -8,7 +8,8 @@
   import { generatorState } from '$lib/shared/generatorState.svelte'
   import LookSettings from './LookSettings.svelte'
   import ParticleFigure from './ParticleFigure.svelte'
-  import { MAX_COUNT, MAX_KINDS, describeLook, kindName, type ParticleKind } from './particles'
+  import ShapePicker from './ShapePicker.svelte'
+  import { DEFAULT_OUTER, MAX_COUNT, MAX_KINDS, describeKind, kindName, type ParticleKind } from './particles'
   import { BORDERS, boxParticles, newSeed, particleSettings, type Border } from './settings'
 
   const gen = generatorState(particleSettings, 'particle-diagram')
@@ -17,14 +18,14 @@
 
   const BORDER_NAMES: Record<Border, string> = { single: 'Single', double: 'Double', none: 'None' }
   const box = $derived(boxParticles(s))
-  const particlesSummary = $derived(s.particles.map((k) => `${k.count} ${describeLook(k.look)}`).join(', '))
+  const particlesSummary = $derived(s.particles.map(describeKind).join(', '))
 
   function setCount(kind: ParticleKind, value: number) {
     if (Number.isFinite(value)) kind.count = Math.min(MAX_COUNT, Math.max(0, Math.round(value)))
   }
 
   function addKind() {
-    s.particles.push({ count: 4, look: { size: 'm', shade: 'white', charge: '' } })
+    s.particles.push({ count: 4, shape: 'single', look: { size: 'm', shade: 'white', charge: '' }, outer: { ...DEFAULT_OUTER } })
   }
 </script>
 
@@ -53,7 +54,15 @@
               </button>
             {/if}
           </div>
-          <LookSettings bind:look={kind.look} {name} />
+          <ShapePicker bind:shape={kind.shape} {name} />
+          {#if kind.shape === 'single'}
+            <LookSettings bind:look={kind.look} {name} />
+          {:else}
+            <p class="part">Center</p>
+            <LookSettings bind:look={kind.look} name="{name} center" />
+            <p class="part">Outer</p>
+            <LookSettings bind:look={kind.outer} name="{name} outer" />
+          {/if}
         </div>
       {/each}
       <div class="actions">
@@ -92,6 +101,7 @@
   .kind:first-child { padding-top: 0.35rem; }
   .kind-head { display: flex; align-items: center; gap: 0.75rem; }
   .kind-head strong { flex: 1; font-size: 0.92rem; }
+  .part { margin: 0.8rem 0 0; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
   .count { display: flex; align-items: center; gap: 0.45rem; font-size: 0.84rem; color: var(--muted); }
   .count input { width: 4.2rem; font-variant-numeric: tabular-nums; }
   .actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.85rem; }

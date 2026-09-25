@@ -1,17 +1,25 @@
 import { describe, expect, it } from 'vitest'
-import { chargeText, kindName, tidyKinds, type ParticleKind } from './particles'
+import { RADIUS, chargeText, describeKind, kindName, particleDiscs, tidyKinds, type Look, type ParticleKind } from './particles'
 
-const ion: ParticleKind = { count: 4, look: { size: 'l', shade: 'light', charge: '-' } }
+const white: Look = { size: 's', shade: 'white', charge: '' }
+const ion: ParticleKind = { count: 4, shape: 'single', look: { size: 'l', shade: 'light', charge: '-' }, outer: white }
+const water: ParticleKind = { count: 3, shape: 'bent', look: { size: 'm', shade: 'gray', charge: '' }, outer: white }
 
 describe('particle kinds from the address or storage', () => {
   it('keeps valid kinds as they are', () => {
-    expect(tidyKinds([ion])).toEqual([ion])
+    expect(tidyKinds([ion, water])).toEqual([ion, water])
   })
 
   it('fills in what it does not understand', () => {
-    expect(tidyKinds([{ count: 'x', look: { size: 'huge', shade: 'pink', charge: '9+' } }])).toEqual([
-      { count: 1, look: { size: 'm', shade: 'white', charge: '' } },
+    expect(tidyKinds([{ count: 'x', shape: 'blob', look: { size: 'huge', shade: 'pink', charge: '9+' }, outer: 'x' }])).toEqual([
+      { count: 1, shape: 'single', look: { size: 'm', shade: 'white', charge: '' }, outer: white },
     ])
+  })
+
+  it('opens an old kind with only a count and a look as the same lone disc', () => {
+    const old = { count: 4, look: { size: 'l', shade: 'light', charge: '-' } }
+    expect(tidyKinds([old])).toEqual([ion])
+    expect(particleDiscs(tidyKinds([old])![0])).toEqual([{ size: 'l', shade: 'light', charge: '-', x: 0, y: 0, r: RADIUS.l }])
   })
 
   it('rounds and limits counts to 0–60', () => {
@@ -29,14 +37,98 @@ describe('particle kinds from the address or storage', () => {
 })
 
 describe('naming and labeling', () => {
-  it('a kind with a charge is an ion, without one an atom', () => {
+  it('a lone kind with a charge is an ion, without one an atom', () => {
     expect(kindName(ion)).toBe('Ion')
     expect(kindName({ ...ion, look: { ...ion.look, charge: '' } })).toBe('Atom')
+    // a lone kind's outer look isn't drawn, so its charge doesn't count
+    expect(kindName({ ...ion, look: { ...ion.look, charge: '' }, outer: { ...white, charge: '+' } })).toBe('Atom')
+  })
+
+  it('a joined kind is a molecule, or an ion cluster when any of it is charged', () => {
+    expect(kindName(water)).toBe('Molecule')
+    expect(kindName({ ...water, look: { ...water.look, charge: '2+' } })).toBe('Ion cluster')
+    expect(kindName({ ...water, outer: { ...white, charge: '-' } })).toBe('Ion cluster')
+  })
+
+  it('describes each kind in plain words', () => {
+    expect(describeKind(ion)).toBe('4 large light gray − ions')
+    expect(describeKind({ ...ion, count: 1, look: { ...ion.look, charge: '' } })).toBe('1 large light gray atom')
+    expect(describeKind(water)).toBe('3 bent molecules (medium gray with 2 small white)')
+    expect(describeKind({ ...water, count: 1, shape: 'pair' })).toBe('1 molecule (medium gray and small white)')
+    expect(describeKind({ ...water, shape: 'cross', look: { size: 's', shade: 'black', charge: '' } })).toBe(
+      '3 molecules (small black with 4 small white)',
+    )
+    const cluster: ParticleKind = { count: 2, shape: 'line', look: { size: 's', shade: 'gray', charge: '2+' }, outer: { size: 'l', shade: 'light', charge: '-' } }
+    expect(describeKind(cluster)).toBe('2 linear ion clusters (small gray 2+ with 2 large light gray −)')
   })
 
   it('writes charges with a true minus sign', () => {
     expect(chargeText('2-')).toBe('2−')
     expect(chargeText('+')).toBe('+')
     expect(chargeText('')).toBe('')
+  })
+})
+
+describe('joined particles as drawn', () => {
+  const kind = (shape: ParticleKind['shape'], center: Look['size'], outer: Look['size']): ParticleKind => ({
+    count: 1,
+    shape,
+    look: { size: center, shade: 'gray', charge: '' },
+    outer: { size: outer, shade: 'white', charge: '' },
+  })
+  const degrees = (d: { x: number; y: number }) => (Math.atan2(d.y, d.x) * 180) / Math.PI
+
+  it('draws the outer discs first and the center last, on top', () => {
+    const discs = particleDiscs(kind('cross', 'm', 's'))
+    expect(discs).toHaveLength(5)
+    expect(discs.at(-1)).toMatchObject({ x: 0, y: 0, r: RADIUS.m, shade: 'gray' })
+    expect(discs.slice(0, 4).every((d) => d.shade === 'white' && d.r === RADIUS.s)).toBe(true)
+  })
+
+  it('has as many outer discs as the shape says', () => {
+    expect(particleDiscs(kind('single', 'm', 's'))).toHaveLength(1)
+    expect(particleDiscs(kind('pair', 'm', 's'))).toHaveLength(2)
+    expect(particleDiscs(kind('bent', 'm', 's'))).toHaveLength(3)
+    expect(particleDiscs(kind('line', 'm', 's'))).toHaveLength(3)
+    expect(particleDiscs(kind('triangle', 'm', 's'))).toHaveLength(4)
+  })
+
+  it('points the outer discs the way the shape goes', () => {
+    const directions = (shape: ParticleKind['shape']) => particleDiscs(kind(shape, 'm', 's')).slice(0, -1).map(degrees)
+    expect(directions('pair').map(Math.round)).toEqual([0])
+    // bent opens downward, as H₂O is usually drawn
+    expect(directions('bent').map((a) => Math.round(a * 100) / 100)).toEqual([37.75, 142.25])
+    expect(directions('line').map((a) => Math.round(Math.abs(a)))).toEqual([0, 180])
+    expect(directions('triangle').map(Math.round)).toEqual([-90, 30, 150])
+    expect(directions('cross').map((a) => Math.round((a + 360) % 360))).toEqual([0, 90, 180, 270])
+  })
+
+  it('sets outer discs touching the center with a slight overlap', () => {
+    // M center (15) with S outer (10): 15 + 10 − 0.2 × 10
+    for (const d of particleDiscs(kind('cross', 'm', 's')).slice(0, -1)) expect(Math.hypot(d.x, d.y)).toBeCloseTo(23)
+    // L with L: 20 + 20 − 0.2 × 20
+    const [outer] = particleDiscs(kind('pair', 'l', 'l'))
+    expect(Math.hypot(outer.x, outer.y)).toBeCloseTo(36)
+  })
+
+  it('pushes big outer discs around a small center apart so they barely overlap each other', () => {
+    const discs = particleDiscs(kind('cross', 'xs', 'xl')).slice(0, -1)
+    // touching the center alone would put them 6 + 26 − 1.2 = 30.8 out
+    expect(Math.hypot(discs[0].x, discs[0].y)).toBeGreaterThan(30.8)
+    for (const [i, a] of discs.entries()) {
+      const b = discs[(i + 1) % discs.length]
+      expect(Math.hypot(a.x - b.x, a.y - b.y)).toBeGreaterThanOrEqual(1.8 * RADIUS.xl - 1e-9)
+    }
+  })
+
+  it('turns the whole particle by the angle but keeps each disc as it is', () => {
+    const k: ParticleKind = { ...kind('triangle', 'm', 's'), outer: { size: 's', shade: 'white', charge: '-' } }
+    const still = particleDiscs(k)
+    const turned = particleDiscs(k, Math.PI / 2)
+    for (const [i, d] of turned.entries()) {
+      expect(d.x).toBeCloseTo(-still[i].y)
+      expect(d.y).toBeCloseTo(still[i].x)
+      expect(d).toMatchObject({ r: still[i].r, charge: still[i].charge, shade: still[i].shade })
+    }
   })
 })

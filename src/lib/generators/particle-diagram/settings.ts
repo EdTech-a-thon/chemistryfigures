@@ -2,7 +2,7 @@
 
 import { choice, defineSettings, json, number, text } from '$lib/shared/settings'
 import { scatter } from './layout'
-import { tidyKinds, type ParticleKind } from './particles'
+import { DEFAULT_OUTER, tidyKinds, type ParticleKind } from './particles'
 
 export const BORDERS = ['single', 'double', 'none'] as const
 export type Border = (typeof BORDERS)[number]
@@ -17,8 +17,8 @@ export const DOUBLE_INSET = 6
 export const MAX_SEED = 999999
 
 const DEFAULT_KINDS: ParticleKind[] = [
-  { count: 4, look: { size: 'l', shade: 'light', charge: '-' } },
-  { count: 4, look: { size: 's', shade: 'white', charge: '+' } },
+  { count: 4, shape: 'single', look: { size: 'l', shade: 'light', charge: '-' }, outer: { ...DEFAULT_OUTER } },
+  { count: 4, shape: 'single', look: { size: 's', shade: 'white', charge: '+' }, outer: { ...DEFAULT_OUTER } },
 ]
 
 export const particleSettings = defineSettings(

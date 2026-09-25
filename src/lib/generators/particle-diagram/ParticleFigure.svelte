@@ -4,7 +4,7 @@
   // shows the figure, since the page also reports what didn't fit.
   import FigureFrame from '$lib/shared/FigureFrame.svelte'
   import Discs from './Discs.svelte'
-  import { describeLook, kindName, type Disc } from './particles'
+  import { describeKind, type Disc } from './particles'
   import { BOX_SIDE, DOUBLE_INSET, type ParticleSettings } from './settings'
 
   let { settings, discs, svg = $bindable() }: { settings: ParticleSettings; discs: Disc[]; svg?: SVGSVGElement } = $props()
@@ -14,7 +14,7 @@
   const label = $derived(
     `A particle diagram: ${settings.particles
       .filter((k) => k.count)
-      .map((k) => `${k.count} ${describeLook(k.look)} ${kindName(k).toLowerCase()}${k.count === 1 ? '' : 's'}`)
+      .map(describeKind)
       .join(', ') || 'an empty box'}`,
   )
 </script>

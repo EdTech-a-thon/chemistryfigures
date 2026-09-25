@@ -1,6 +1,7 @@
 <script lang="ts">
-  // Atoms and ions as drawn: gray-scale discs with a dark outline, and an
-  // ion's charge centered on it, always upright.
+  // Particles as drawn: gray-scale discs with a dark outline, each in the
+  // order given (a joined particle's center last, on top), and an ion's
+  // charge centered on it, always upright even when its particle is turned.
   import { DARK_SHADES, SHADE_FILL, chargeText, type Disc } from './particles'
 
   let { discs }: { discs: Disc[] } = $props()
