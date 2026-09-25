@@ -13,6 +13,11 @@ describe('searching the directory', () => {
     expect(ids('grad cyl')).toEqual(expect.arrayContaining(['volume-reading', 'volume-by-displacement']))
   })
 
+  it('finds Bohr Model the ways teachers ask for it', () => {
+    for (const query of ['bohr', 'atomic model', 'electron shell', 'proton', 'neutron', 'energy level'])
+      expect(ids(query)).toContain('bohr-model')
+  })
+
   it('finds a generator by its path', () => {
     expect(findGenerator('/volume-by-displacement')?.name).toBe('Volume by Displacement')
   })

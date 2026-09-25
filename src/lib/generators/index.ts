@@ -3,6 +3,7 @@
 // folder and one entry here.
 
 import type { Component } from 'svelte'
+import BohrModelPreview from './bohr-model/Preview.svelte'
 import MassReadingPreview from './mass-reading/Preview.svelte'
 import ParticleDiagramPreview from './particle-diagram/Preview.svelte'
 import PhReadingPreview from './ph-reading/Preview.svelte'
@@ -86,6 +87,16 @@ export const GENERATORS: Generator[] = [
       'Make printable particle diagrams for AP Chemistry tests. Pick the atoms, ions and molecules, their sizes, shades and charges, and how many of each, and get them scattered in a box or packed in an ionic or alloy lattice, with a key.',
     keywords: ['particulate', 'particles', 'atom', 'atoms', 'ion', 'ions', 'molecule', 'molecules', 'lattice', 'alloy', 'solid', 'liquid', 'gas', 'solution', 'ionic', 'AP', 'diagram', 'model', 'representation'],
     Preview: ParticleDiagramPreview,
+  },
+  {
+    id: 'bohr-model',
+    name: 'Bohr Model',
+    path: '/bohr-model',
+    blurb: 'An atom’s protons, neutrons and electrons on their shells.',
+    description:
+      'Make printable Bohr model diagrams for chemistry tests. Set the protons, neutrons and electrons on each shell, or fill the shells for any element, and get the nucleus and rings in your colors, with empty rings or a blank nucleus for students to complete.',
+    keywords: ['bohr', 'atom', 'atomic', 'model', 'structure', 'proton', 'protons', 'neutron', 'neutrons', 'electron', 'electrons', 'nucleus', 'shell', 'shells', 'energy', 'level', 'orbit', 'isotope', 'ion', 'diagram'],
+    Preview: BohrModelPreview,
   },
 ]
 
