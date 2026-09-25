@@ -2,9 +2,10 @@
   // Volume by Displacement: pick a graduated cylinder, type the water's
   // reading before and after the object goes in, and get a figure students
   // find the object's volume from.
-  import { Circle, Dices, FlaskConical, Ruler, Type } from '@lucide/svelte'
+  import { Circle, Dices, FlaskConical, Ruler, Type, ZoomIn } from '@lucide/svelte'
   import FigureTextSettings from '$lib/shared/FigureTextSettings.svelte'
   import GeneratorPage from '$lib/shared/GeneratorPage.svelte'
+  import MagnifierSettings from '$lib/shared/MagnifierSettings.svelte'
   import ReadingField from '$lib/shared/ReadingField.svelte'
   import Section from '$lib/shared/Section.svelte'
   import { generatorState } from '$lib/shared/generatorState.svelte'
@@ -13,7 +14,7 @@
   import DisplacementFigure from './DisplacementFigure.svelte'
   import { MARBLE_COUNTS, OBJECTS, type ObjectKind } from './objects'
   import { displacedVolume, fixReadings, randomReadings } from './readings'
-  import { answerLine, cylinderScale, displacementSettings, objectInCylinder } from './settings'
+  import { DISPLACEMENT_VIEWS, DISPLACEMENT_VIEW_NAMES, answerLine, cylinderScale, displacementSettings, objectInCylinder } from './settings'
 
   const gen = generatorState(displacementSettings, 'volume-by-displacement')
   const s = gen.s
@@ -110,6 +111,9 @@
           Drawn to look about right for its volume, not to scale.
         {/if}
       </p>
+    </Section>
+    <Section title="Magnifiers" summary={DISPLACEMENT_VIEW_NAMES[s.view]} icon={ZoomIn}>
+      <MagnifierSettings bind:view={s.view} bind:span={s.span} views={DISPLACEMENT_VIEWS} names={DISPLACEMENT_VIEW_NAMES} />
     </Section>
     <Section title="Captions" summary={[s.beforeCaption, s.afterCaption].map((c) => c.trim() || 'none').join(' / ')} icon={Type}>
       <label class="field">

@@ -1,8 +1,11 @@
 <script lang="ts">
   // The Volume by Displacement figure for a set of settings: the same
   // graduated cylinder twice, side by side, before and after the object goes
-  // in, each with its caption underneath.
+  // in, each with its caption underneath and, optionally, a magnifier on its
+  // meniscus beside it.
   import FigureFrame from '$lib/shared/FigureFrame.svelte'
+  import Magnifier from '$lib/shared/Magnifier.svelte'
+  import { magnifierLayout, sizeAt } from '$lib/shared/magnify'
   import GraduatedCylinder from '../volume-reading/GraduatedCylinder.svelte'
   import { cylinderLayout } from '../volume-reading/cylinder'
   import { formatReading } from '../volume-reading/scale'
@@ -16,10 +19,21 @@
 
   const scale = $derived(cylinderScale(settings.size))
   const at = $derived(cylinderLayout(scale, settings.size))
-  const captioned = $derived(!!(settings.beforeCaption.trim() || settings.afterCaption.trim()))
-  const width = $derived(2 * at.width + GAP)
-  const height = $derived(at.height + (captioned ? CAPTION_H : 0))
   const object = $derived(objectInCylinder(settings).placed)
+  const captioned = $derived(!!(settings.beforeCaption.trim() || settings.afterCaption.trim()))
+
+  /** One cylinder and its magnifier, laid out as if on their own. */
+  const half = (reading: number) => {
+    const source = { x: at.cx, y: at.yOf(reading), r: (settings.span * scale.labelEvery * at.perMl) / 2 }
+    const layout = magnifierLayout(settings.view, at.width, at.height, source)
+    // Only a magnifier-only view leaves the cylinder out, and this has none.
+    return { source, ...layout, origin: layout.origin ?? { x: 0, y: 0 } }
+  }
+  const before = $derived(half(settings.before))
+  const after = $derived(half(settings.after))
+  const width = $derived(before.width + GAP + after.width)
+  const height = $derived(before.height + (captioned ? CAPTION_H : 0))
+
   const OBJECT_NAMES = { marbles: 'marbles', rock: 'a rock', cube: 'a cube' }
   const objectName = $derived(
     settings.object === 'marbles' ? (settings.marbles === 1 ? 'a marble' : `${settings.marbles} marbles`) : OBJECT_NAMES[settings.object],
@@ -30,15 +44,24 @@
   )
 </script>
 
-{#snippet cylinder(x: number, reading: number, caption: string, withObject: boolean)}
+{#snippet beforeScene(zoom: number)}
+  <GraduatedCylinder {scale} size={settings.size} reading={settings.before} tint={settings.tint} {zoom} />
+{/snippet}
+
+{#snippet afterScene(zoom: number)}
+  <GraduatedCylinder {scale} size={settings.size} reading={settings.after} tint={settings.tint} {zoom}>
+    <ObjectShape placed={object} k={sizeAt(zoom)} />
+  </GraduatedCylinder>
+{/snippet}
+
+{#snippet cylinder(x: number, h: typeof before, caption: string, scene: typeof beforeScene)}
   <g transform="translate({x} 0)">
-    <GraduatedCylinder {scale} size={settings.size} {reading} tint={settings.tint}>
-      {#if withObject}
-        <ObjectShape placed={object} />
-      {/if}
-    </GraduatedCylinder>
+    <g transform="translate({h.origin.x} {h.origin.y})">{@render scene(1)}</g>
+    {#if h.magnifier}
+      <Magnifier source={h.source} target={h.magnifier} marked origin={h.origin} {scene} />
+    {/if}
     {#if caption.trim()}
-      <text x={at.cx} y={at.height + 24} text-anchor="middle" font-size="18" font-weight="700" fill="#111">{caption.trim()}</text>
+      <text x={h.origin.x + at.cx} y={h.height + 24} text-anchor="middle" font-size="18" font-weight="700" fill="#111">{caption.trim()}</text>
     {/if}
   </g>
 {/snippet}
@@ -51,6 +74,6 @@
   title={settings.titleMode === 'text' ? settings.title : ''}
   answerKey={settings.answerKey ? answerLine(settings) : ''}
 >
-  {@render cylinder(0, settings.before, settings.beforeCaption, false)}
-  {@render cylinder(at.width + GAP, settings.after, settings.afterCaption, true)}
+  {@render cylinder(0, before, settings.beforeCaption, beforeScene)}
+  {@render cylinder(before.width + GAP, after, settings.afterCaption, afterScene)}
 </FigureFrame>

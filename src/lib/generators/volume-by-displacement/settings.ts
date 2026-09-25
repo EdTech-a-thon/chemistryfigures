@@ -8,7 +8,11 @@ import { CYLINDER_SIZES, formatReading, volumeScale, type CylinderSize } from '.
 import { AREA_PER_RISE, OBJECTS, drawnArea, placeObject } from './objects'
 import { displacedVolume, fixReadings } from './readings'
 
-export const cylinderScale = (size: CylinderSize) => volumeScale('cylinder', size)
+/** A magnifier never replaces the cylinders: the object has to show. */
+export const DISPLACEMENT_VIEWS = ['whole', 'both'] as const
+export const DISPLACEMENT_VIEW_NAMES = { whole: 'Cylinders only', both: 'Cylinders and magnifiers' }
+
+export const cylinderScale =(size: CylinderSize) => volumeScale('cylinder', size)
 
 export const displacementSettings = defineSettings(
   {
@@ -18,11 +22,13 @@ export const displacementSettings = defineSettings(
     tint: choice(LIQUID_TINTS, 'gray'),
     object: choice(OBJECTS, 'marbles'),
     marbles: number({ min: 1, max: 5, fallback: 2 }),
+    view: choice(DISPLACEMENT_VIEWS, 'whole'),
+    span: number({ min: 1, max: 6, fallback: 3 }),
     beforeCaption: text('Before', 40),
     afterCaption: text('After', 40),
     ...figureTextFields(),
   },
-  (s) => ({ ...s, ...fixReadings(cylinderScale(s.size), s.before, s.after), marbles: Math.round(s.marbles) }),
+  (s) => ({ ...s, ...fixReadings(cylinderScale(s.size), s.before, s.after), marbles: Math.round(s.marbles), span: Math.round(s.span) }),
 )
 
 export type DisplacementSettings = typeof displacementSettings.defaults

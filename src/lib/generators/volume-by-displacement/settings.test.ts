@@ -14,6 +14,12 @@ describe('Volume by Displacement settings', () => {
     expect(fromQuery('size=10&before=40&after=90')).toMatchObject({ before: 9.99, after: 10 })
   })
 
+  it('start with two marbles and no magnifiers, and never show magnifiers alone', () => {
+    expect(displacementSettings.defaults).toMatchObject({ object: 'marbles', marbles: 2, view: 'whole' })
+    expect(fromQuery('view=magnifier').view).toBe('whole')
+    expect(fromQuery('view=both&marbles=3.4').marbles).toBe(3)
+  })
+
   it('keep a cleared caption cleared', () => {
     const s = { ...displacementSettings.defaults, afterCaption: '' }
     expect(fromQuery(displacementSettings.toQuery(s)).afterCaption).toBe('')
